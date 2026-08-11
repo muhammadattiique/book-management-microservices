@@ -18,6 +18,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
@@ -35,7 +36,7 @@ public class BookController {
         return ResponseEntity.ok(bookService.getAllBooks());
     }
 
-    @Operation(summary = "Search and paginate books", description = "Retrieves books with optional filters (title, author, category, isbn, year), pagination, and sorting.")
+    @Operation(summary = "Search and paginate books", description = "Retrieves books with optional filters, pagination, and sorting.")
     @ApiResponse(responseCode = "200", description = "Successfully retrieved paginated list of books")
     @GetMapping("/search")
     public ResponseEntity<Page<BookResponse>> searchBooks(
@@ -49,6 +50,27 @@ public class BookController {
         Specification<Book> spec = BookSpecification.filterBooks(title, author, category, isbn, year);
         Page<BookResponse> books = bookService.searchBooks(spec, pageable);
         return ResponseEntity.ok(books);
+    }
+
+    @Operation(summary = "Get books by Author ID", description = "Custom query to retrieve books written by a specific author.")
+    @ApiResponse(responseCode = "200", description = "Successfully retrieved books by author")
+    @GetMapping("/author/{authorId}")
+    public ResponseEntity<List<BookResponse>> getBooksByAuthor(@PathVariable Long authorId) {
+        return ResponseEntity.ok(bookService.getBooksByAuthor(authorId));
+    }
+
+    @Operation(summary = "Get books by Category Name", description = "Custom query to retrieve books belonging to a specific category.")
+    @ApiResponse(responseCode = "200", description = "Successfully retrieved books by category")
+    @GetMapping("/category/name/{categoryName}")
+    public ResponseEntity<List<BookResponse>> getBooksByCategoryName(@PathVariable String categoryName) {
+        return ResponseEntity.ok(bookService.getBooksByCategoryName(categoryName));
+    }
+
+    @Operation(summary = "Get budget-friendly books", description = "Custom JPQL query to retrieve books under or equal to a specific price.")
+    @ApiResponse(responseCode = "200", description = "Successfully retrieved budget books")
+    @GetMapping("/filter/max-price")
+    public ResponseEntity<List<BookResponse>> getBooksCheaperThan(@RequestParam BigDecimal maxPrice) {
+        return ResponseEntity.ok(bookService.getBooksCheaperThan(maxPrice));
     }
 
     @Operation(summary = "Get book by ID", description = "Retrieves a book record by its unique ID.")

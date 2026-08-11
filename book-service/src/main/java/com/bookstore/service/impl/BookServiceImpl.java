@@ -20,6 +20,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -142,5 +143,32 @@ public class BookServiceImpl implements BookService {
         }
         bookRepository.deleteById(id);
         log.info("Successfully deleted book with ID: {}", id);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<BookResponse> getBooksByAuthor(Long authorId) {
+        log.info("Fetching books for author ID: {}", authorId);
+        return bookRepository.findByAuthorId(authorId).stream()
+                .map(bookMapper::toBookResponse)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<BookResponse> getBooksByCategoryName(String categoryName) {
+        log.info("Fetching books for category name: {}", categoryName);
+        return bookRepository.findByCategoryNameIgnoreCase(categoryName).stream()
+                .map(bookMapper::toBookResponse)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<BookResponse> getBooksCheaperThan(BigDecimal maxPrice) {
+        log.info("Fetching books with max price: {}", maxPrice);
+        return bookRepository.findBooksCheaperThan(maxPrice).stream()
+                .map(bookMapper::toBookResponse)
+                .collect(Collectors.toList());
     }
 }
