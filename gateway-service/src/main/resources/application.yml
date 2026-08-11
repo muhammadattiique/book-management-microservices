@@ -1,0 +1,40 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: gateway-service
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true # Automatically create routes for registered Eureka services
+          lower-case-service-id: true
+      routes:
+        - id: eureka-service-route
+          uri: lb://eureka-service
+          predicates:
+            - Path=/eureka-api/**
+          filters:
+            - StripPrefix=1
+
+        # Updated route to match the new /api/v1 contract
+        - id: book-service-route
+          uri: lb://book-service
+          predicates:
+            - Path=/api/v1/books/**
+
+# Eureka Client Configuration
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    prefer-ip-address: true
+
+# Expose Actuator health endpoint
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,gateway

@@ -1,0 +1,585 @@
+[INFO] Scanning for projects...
+[INFO] ------------------------------------------------------------------------
+[INFO] Reactor Build Order:
+[INFO] 
+[INFO] book-hub-system                                                    [pom]
+[INFO] gateway-service                                                    [jar]
+[INFO] eureka-service                                                     [jar]
+[INFO] auth-service                                                       [jar]
+[INFO] book-service                                                       [jar]
+[INFO] loan-service                                                       [jar]
+[INFO] inventory-service                                                  [jar]
+[INFO] notification-service                                               [jar]
+[INFO] 
+[INFO] -------------------< com.bookstore:book-hub-system >--------------------
+[INFO] Building book-hub-system 0.0.1-SNAPSHOT                            [1/8]
+[INFO]   from pom.xml
+[INFO] --------------------------------[ pom ]---------------------------------
+[INFO] 
+[INFO] --- dependency:3.6.1:tree (default-cli) @ book-hub-system ---
+[INFO] com.bookstore:book-hub-system:pom:0.0.1-SNAPSHOT
+[INFO] +- org.springframework.boot:spring-boot-starter:jar:3.3.3:compile
+[INFO] |  +- org.springframework.boot:spring-boot:jar:3.3.3:compile
+[INFO] |  |  \- org.springframework:spring-context:jar:6.1.12:compile
+[INFO] |  |     +- org.springframework:spring-aop:jar:6.1.12:compile
+[INFO] |  |     +- org.springframework:spring-beans:jar:6.1.12:compile
+[INFO] |  |     +- org.springframework:spring-expression:jar:6.1.12:compile
+[INFO] |  |     \- io.micrometer:micrometer-observation:jar:1.13.3:compile
+[INFO] |  |        \- io.micrometer:micrometer-commons:jar:1.13.3:compile
+[INFO] |  +- org.springframework.boot:spring-boot-autoconfigure:jar:3.3.3:compile
+[INFO] |  +- org.springframework.boot:spring-boot-starter-logging:jar:3.3.3:compile
+[INFO] |  |  +- ch.qos.logback:logback-classic:jar:1.5.7:compile
+[INFO] |  |  |  \- ch.qos.logback:logback-core:jar:1.5.7:compile
+[INFO] |  |  +- org.apache.logging.log4j:log4j-to-slf4j:jar:2.23.1:compile
+[INFO] |  |  |  \- org.apache.logging.log4j:log4j-api:jar:2.23.1:compile
+[INFO] |  |  \- org.slf4j:jul-to-slf4j:jar:2.0.16:compile
+[INFO] |  +- jakarta.annotation:jakarta.annotation-api:jar:2.1.1:compile
+[INFO] |  +- org.springframework:spring-core:jar:6.1.12:compile
+[INFO] |  |  \- org.springframework:spring-jcl:jar:6.1.12:compile
+[INFO] |  \- org.yaml:snakeyaml:jar:2.2:compile
+[INFO] \- org.springframework.boot:spring-boot-starter-test:jar:3.3.3:test
+[INFO]    +- org.springframework.boot:spring-boot-test:jar:3.3.3:test
+[INFO]    +- org.springframework.boot:spring-boot-test-autoconfigure:jar:3.3.3:test
+[INFO]    +- com.jayway.jsonpath:json-path:jar:2.9.0:test
+[INFO]    |  \- org.slf4j:slf4j-api:jar:2.0.16:compile
+[INFO]    +- jakarta.xml.bind:jakarta.xml.bind-api:jar:4.0.2:test
+[INFO]    |  \- jakarta.activation:jakarta.activation-api:jar:2.1.3:test
+[INFO]    +- net.minidev:json-smart:jar:2.5.1:test
+[INFO]    |  \- net.minidev:accessors-smart:jar:2.5.1:test
+[INFO]    |     \- org.ow2.asm:asm:jar:9.6:test
+[INFO]    +- org.assertj:assertj-core:jar:3.25.3:test
+[INFO]    |  \- net.bytebuddy:byte-buddy:jar:1.14.19:test
+[INFO]    +- org.awaitility:awaitility:jar:4.2.2:test
+[INFO]    +- org.hamcrest:hamcrest:jar:2.2:test
+[INFO]    +- org.junit.jupiter:junit-jupiter:jar:5.10.3:test
+[INFO]    |  +- org.junit.jupiter:junit-jupiter-api:jar:5.10.3:test
+[INFO]    |  |  +- org.opentest4j:opentest4j:jar:1.3.0:test
+[INFO]    |  |  +- org.junit.platform:junit-platform-commons:jar:1.10.3:test
+[INFO]    |  |  \- org.apiguardian:apiguardian-api:jar:1.1.2:test
+[INFO]    |  +- org.junit.jupiter:junit-jupiter-params:jar:5.10.3:test
+[INFO]    |  \- org.junit.jupiter:junit-jupiter-engine:jar:5.10.3:test
+[INFO]    |     \- org.junit.platform:junit-platform-engine:jar:1.10.3:test
+[INFO]    +- org.mockito:mockito-core:jar:5.11.0:test
+[INFO]    |  +- net.bytebuddy:byte-buddy-agent:jar:1.14.19:test
+[INFO]    |  \- org.objenesis:objenesis:jar:3.3:test
+[INFO]    +- org.mockito:mockito-junit-jupiter:jar:5.11.0:test
+[INFO]    +- org.skyscreamer:jsonassert:jar:1.5.3:test
+[INFO]    |  \- com.vaadin.external.google:android-json:jar:0.0.20131108.vaadin1:test
+[INFO]    +- org.springframework:spring-test:jar:6.1.12:test
+[INFO]    \- org.xmlunit:xmlunit-core:jar:2.9.1:test
+[INFO] 
+[INFO] -------------------< com.bookstore:gateway-service >--------------------
+[INFO] Building gateway-service 0.0.1-SNAPSHOT                            [2/8]
+[INFO]   from gateway-service/pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- dependency:3.6.1:tree (default-cli) @ gateway-service ---
+[INFO] com.bookstore:gateway-service:jar:0.0.1-SNAPSHOT
+[INFO] +- org.springframework.boot:spring-boot-starter:jar:3.3.3:compile
+[INFO] |  +- org.springframework.boot:spring-boot:jar:3.3.3:compile
+[INFO] |  |  \- org.springframework:spring-context:jar:6.1.12:compile
+[INFO] |  |     +- org.springframework:spring-aop:jar:6.1.12:compile
+[INFO] |  |     +- org.springframework:spring-beans:jar:6.1.12:compile
+[INFO] |  |     +- org.springframework:spring-expression:jar:6.1.12:compile
+[INFO] |  |     \- io.micrometer:micrometer-observation:jar:1.13.3:compile
+[INFO] |  |        \- io.micrometer:micrometer-commons:jar:1.13.3:compile
+[INFO] |  +- org.springframework.boot:spring-boot-autoconfigure:jar:3.3.3:compile
+[INFO] |  +- org.springframework.boot:spring-boot-starter-logging:jar:3.3.3:compile
+[INFO] |  |  +- ch.qos.logback:logback-classic:jar:1.5.7:compile
+[INFO] |  |  |  \- ch.qos.logback:logback-core:jar:1.5.7:compile
+[INFO] |  |  +- org.apache.logging.log4j:log4j-to-slf4j:jar:2.23.1:compile
+[INFO] |  |  |  \- org.apache.logging.log4j:log4j-api:jar:2.23.1:compile
+[INFO] |  |  \- org.slf4j:jul-to-slf4j:jar:2.0.16:compile
+[INFO] |  +- jakarta.annotation:jakarta.annotation-api:jar:2.1.1:compile
+[INFO] |  +- org.springframework:spring-core:jar:6.1.12:compile
+[INFO] |  |  \- org.springframework:spring-jcl:jar:6.1.12:compile
+[INFO] |  \- org.yaml:snakeyaml:jar:2.2:compile
+[INFO] \- org.springframework.boot:spring-boot-starter-test:jar:3.3.3:test
+[INFO]    +- org.springframework.boot:spring-boot-test:jar:3.3.3:test
+[INFO]    +- org.springframework.boot:spring-boot-test-autoconfigure:jar:3.3.3:test
+[INFO]    +- com.jayway.jsonpath:json-path:jar:2.9.0:test
+[INFO]    |  \- org.slf4j:slf4j-api:jar:2.0.16:compile
+[INFO]    +- jakarta.xml.bind:jakarta.xml.bind-api:jar:4.0.2:test
+[INFO]    |  \- jakarta.activation:jakarta.activation-api:jar:2.1.3:test
+[INFO]    +- net.minidev:json-smart:jar:2.5.1:test
+[INFO]    |  \- net.minidev:accessors-smart:jar:2.5.1:test
+[INFO]    |     \- org.ow2.asm:asm:jar:9.6:test
+[INFO]    +- org.assertj:assertj-core:jar:3.25.3:test
+[INFO]    |  \- net.bytebuddy:byte-buddy:jar:1.14.19:test
+[INFO]    +- org.awaitility:awaitility:jar:4.2.2:test
+[INFO]    +- org.hamcrest:hamcrest:jar:2.2:test
+[INFO]    +- org.junit.jupiter:junit-jupiter:jar:5.10.3:test
+[INFO]    |  +- org.junit.jupiter:junit-jupiter-api:jar:5.10.3:test
+[INFO]    |  |  +- org.opentest4j:opentest4j:jar:1.3.0:test
+[INFO]    |  |  +- org.junit.platform:junit-platform-commons:jar:1.10.3:test
+[INFO]    |  |  \- org.apiguardian:apiguardian-api:jar:1.1.2:test
+[INFO]    |  +- org.junit.jupiter:junit-jupiter-params:jar:5.10.3:test
+[INFO]    |  \- org.junit.jupiter:junit-jupiter-engine:jar:5.10.3:test
+[INFO]    |     \- org.junit.platform:junit-platform-engine:jar:1.10.3:test
+[INFO]    +- org.mockito:mockito-core:jar:5.11.0:test
+[INFO]    |  +- net.bytebuddy:byte-buddy-agent:jar:1.14.19:test
+[INFO]    |  \- org.objenesis:objenesis:jar:3.3:test
+[INFO]    +- org.mockito:mockito-junit-jupiter:jar:5.11.0:test
+[INFO]    +- org.skyscreamer:jsonassert:jar:1.5.3:test
+[INFO]    |  \- com.vaadin.external.google:android-json:jar:0.0.20131108.vaadin1:test
+[INFO]    +- org.springframework:spring-test:jar:6.1.12:test
+[INFO]    \- org.xmlunit:xmlunit-core:jar:2.9.1:test
+[INFO] 
+[INFO] --------------------< com.bookstore:eureka-service >--------------------
+[INFO] Building eureka-service 0.0.1-SNAPSHOT                             [3/8]
+[INFO]   from eureka-service/pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- dependency:3.6.1:tree (default-cli) @ eureka-service ---
+[INFO] com.bookstore:eureka-service:jar:0.0.1-SNAPSHOT
+[INFO] +- org.springframework.cloud:spring-cloud-starter-netflix-eureka-server:jar:4.2.0:compile
+[INFO] |  +- org.springframework.cloud:spring-cloud-starter:jar:4.1.4:compile
+[INFO] |  |  +- org.springframework.cloud:spring-cloud-context:jar:4.1.4:compile
+[INFO] |  |  |  \- org.springframework.security:spring-security-crypto:jar:6.3.3:compile
+[INFO] |  |  +- org.springframework.cloud:spring-cloud-commons:jar:4.1.4:compile
+[INFO] |  |  \- org.springframework.security:spring-security-rsa:jar:1.1.3:compile
+[INFO] |  |     \- org.bouncycastle:bcprov-jdk18on:jar:1.78:compile
+[INFO] |  +- org.springframework.cloud:spring-cloud-netflix-eureka-server:jar:4.1.3:compile
+[INFO] |  |  +- org.springframework.boot:spring-boot-starter-actuator:jar:3.3.3:compile
+[INFO] |  |  |  +- org.springframework.boot:spring-boot-actuator-autoconfigure:jar:3.3.3:compile
+[INFO] |  |  |  |  \- org.springframework.boot:spring-boot-actuator:jar:3.3.3:compile
+[INFO] |  |  |  \- io.micrometer:micrometer-jakarta9:jar:1.13.3:compile
+[INFO] |  |  |     \- io.micrometer:micrometer-core:jar:1.13.3:compile
+[INFO] |  |  |        +- org.hdrhistogram:HdrHistogram:jar:2.2.2:runtime
+[INFO] |  |  |        \- org.latencyutils:LatencyUtils:jar:2.0.3:runtime
+[INFO] |  |  +- org.springframework.boot:spring-boot-starter-freemarker:jar:3.3.3:compile
+[INFO] |  |  |  +- org.freemarker:freemarker:jar:2.3.33:compile
+[INFO] |  |  |  \- org.springframework:spring-context-support:jar:6.1.12:compile
+[INFO] |  |  +- org.springframework.cloud:spring-cloud-netflix-eureka-client:jar:4.1.3:compile
+[INFO] |  |  |  +- com.netflix.eureka:eureka-client:jar:2.0.3:compile
+[INFO] |  |  |  |  +- com.thoughtworks.xstream:xstream:jar:1.4.20:compile
+[INFO] |  |  |  |  |  \- io.github.x-stream:mxparser:jar:1.2.2:compile
+[INFO] |  |  |  |  |     \- xmlpull:xmlpull:jar:1.1.3.1:compile
+[INFO] |  |  |  |  +- com.netflix.spectator:spectator-api:jar:1.7.3:compile
+[INFO] |  |  |  |  +- org.apache.httpcomponents:httpclient:jar:4.5.3:compile
+[INFO] |  |  |  |  |  \- org.apache.httpcomponents:httpcore:jar:4.4.16:compile
+[INFO] |  |  |  |  +- commons-configuration:commons-configuration:jar:1.10:compile
+[INFO] |  |  |  |  |  \- commons-lang:commons-lang:jar:2.6:compile
+[INFO] |  |  |  |  +- com.netflix.netflix-commons:netflix-eventbus:jar:0.3.0:runtime
+[INFO] |  |  |  |  |  +- com.netflix.netflix-commons:netflix-infix:jar:0.3.0:runtime
+[INFO] |  |  |  |  |  |  +- commons-jxpath:commons-jxpath:jar:1.3:runtime
+[INFO] |  |  |  |  |  |  +- joda-time:joda-time:jar:2.3:runtime
+[INFO] |  |  |  |  |  |  +- org.antlr:antlr-runtime:jar:3.4:runtime
+[INFO] |  |  |  |  |  |  |  +- org.antlr:stringtemplate:jar:3.2.1:runtime
+[INFO] |  |  |  |  |  |  |  \- antlr:antlr:jar:2.7.7:runtime
+[INFO] |  |  |  |  |  |  \- com.google.code.gson:gson:jar:2.10.1:runtime
+[INFO] |  |  |  |  |  +- com.netflix.servo:servo-core:jar:0.5.3:runtime
+[INFO] |  |  |  |  |  \- org.apache.commons:commons-math:jar:2.2:runtime
+[INFO] |  |  |  |  +- javax.annotation:javax.annotation-api:jar:1.2:runtime
+[INFO] |  |  |  |  \- org.codehaus.jettison:jettison:jar:1.5.4:runtime
+[INFO] |  |  |  \- org.apache.httpcomponents.client5:httpclient5:jar:5.3.1:compile
+[INFO] |  |  |     +- org.apache.httpcomponents.core5:httpcore5:jar:5.2.5:compile
+[INFO] |  |  |     \- org.apache.httpcomponents.core5:httpcore5-h2:jar:5.2.5:compile
+[INFO] |  |  +- com.netflix.eureka:eureka-client-jersey3:jar:2.0.3:compile
+[INFO] |  |  |  \- org.glassfish.jersey.connectors:jersey-apache-connector:jar:3.1.8:compile
+[INFO] |  |  |     +- commons-codec:commons-codec:jar:1.16.1:compile
+[INFO] |  |  |     \- commons-logging:commons-logging:jar:1.3.1:compile
+[INFO] |  |  +- com.netflix.eureka:eureka-core-jersey3:jar:2.0.3:compile
+[INFO] |  |  |  \- com.netflix.eureka:eureka-core:jar:2.0.3:compile
+[INFO] |  |  |     \- com.google.guava:guava:jar:33.0.0-jre:runtime
+[INFO] |  |  |        +- com.google.guava:failureaccess:jar:1.0.2:runtime
+[INFO] |  |  |        +- com.google.guava:listenablefuture:jar:9999.0-empty-to-avoid-conflict-with-guava:runtime
+[INFO] |  |  |        +- org.checkerframework:checker-qual:jar:3.41.0:runtime
+[INFO] |  |  |        +- com.google.errorprone:error_prone_annotations:jar:2.23.0:runtime
+[INFO] |  |  |        \- com.google.j2objc:j2objc-annotations:jar:2.8:runtime
+[INFO] |  |  +- org.glassfish.jersey.containers:jersey-container-servlet:jar:3.1.8:compile
+[INFO] |  |  |  +- org.glassfish.jersey.containers:jersey-container-servlet-core:jar:3.1.8:compile
+[INFO] |  |  |  +- org.glassfish.jersey.core:jersey-common:jar:3.1.8:compile
+[INFO] |  |  |  |  \- org.glassfish.hk2:osgi-resource-locator:jar:1.0.3:compile
+[INFO] |  |  |  \- jakarta.ws.rs:jakarta.ws.rs-api:jar:3.1.0:compile
+[INFO] |  |  +- org.glassfish.jersey.core:jersey-server:jar:3.1.8:compile
+[INFO] |  |  |  +- jakarta.inject:jakarta.inject-api:jar:2.0.1:compile
+[INFO] |  |  |  \- jakarta.validation:jakarta.validation-api:jar:3.0.2:compile
+[INFO] |  |  +- org.glassfish.jersey.core:jersey-client:jar:3.1.8:compile
+[INFO] |  |  +- org.glassfish.jersey.inject:jersey-hk2:jar:3.1.8:compile
+[INFO] |  |  |  +- org.glassfish.hk2:hk2-locator:jar:3.0.6:compile
+[INFO] |  |  |  |  +- org.glassfish.hk2.external:aopalliance-repackaged:jar:3.0.6:compile
+[INFO] |  |  |  |  \- org.glassfish.hk2:hk2-utils:jar:3.0.6:compile
+[INFO] |  |  |  \- org.javassist:javassist:jar:3.30.2-GA:compile
+[INFO] |  |  +- org.glassfish.hk2:spring-bridge:jar:3.1.1:compile
+[INFO] |  |  |  \- org.glassfish.hk2:hk2-api:jar:3.1.1:compile
+[INFO] |  |  \- com.fasterxml.jackson.dataformat:jackson-dataformat-xml:jar:2.17.2:compile
+[INFO] |  |     +- com.fasterxml.jackson.core:jackson-core:jar:2.17.2:compile
+[INFO] |  |     +- com.fasterxml.jackson.core:jackson-annotations:jar:2.17.2:compile
+[INFO] |  |     +- org.codehaus.woodstox:stax2-api:jar:4.2.2:compile
+[INFO] |  |     \- com.fasterxml.woodstox:woodstox-core:jar:6.7.0:compile
+[INFO] |  +- org.springframework.cloud:spring-cloud-starter-loadbalancer:jar:4.1.4:compile
+[INFO] |  |  +- org.springframework.cloud:spring-cloud-loadbalancer:jar:4.1.4:compile
+[INFO] |  |  |  +- io.projectreactor:reactor-core:jar:3.6.9:compile
+[INFO] |  |  |  |  \- org.reactivestreams:reactive-streams:jar:1.0.4:compile
+[INFO] |  |  |  \- io.projectreactor.addons:reactor-extra:jar:3.5.2:compile
+[INFO] |  |  +- org.springframework.boot:spring-boot-starter-cache:jar:3.3.3:compile
+[INFO] |  |  \- com.stoyanr:evictor:jar:1.0.0:compile
+[INFO] |  \- org.glassfish.jaxb:jaxb-runtime:jar:4.0.5:compile
+[INFO] |     \- org.glassfish.jaxb:jaxb-core:jar:4.0.5:compile
+[INFO] |        +- org.eclipse.angus:angus-activation:jar:2.0.2:runtime
+[INFO] |        +- org.glassfish.jaxb:txw2:jar:4.0.5:compile
+[INFO] |        \- com.sun.istack:istack-commons-runtime:jar:4.1.2:compile
+[INFO] +- org.springframework.boot:spring-boot-starter-web:jar:3.3.3:compile
+[INFO] |  +- org.springframework.boot:spring-boot-starter-json:jar:3.3.3:compile
+[INFO] |  |  +- com.fasterxml.jackson.core:jackson-databind:jar:2.17.2:compile
+[INFO] |  |  +- com.fasterxml.jackson.datatype:jackson-datatype-jdk8:jar:2.17.2:compile
+[INFO] |  |  +- com.fasterxml.jackson.datatype:jackson-datatype-jsr310:jar:2.17.2:compile
+[INFO] |  |  \- com.fasterxml.jackson.module:jackson-module-parameter-names:jar:2.17.2:compile
+[INFO] |  +- org.springframework.boot:spring-boot-starter-tomcat:jar:3.3.3:compile
+[INFO] |  |  +- org.apache.tomcat.embed:tomcat-embed-core:jar:10.1.28:compile
+[INFO] |  |  +- org.apache.tomcat.embed:tomcat-embed-el:jar:10.1.28:compile
+[INFO] |  |  \- org.apache.tomcat.embed:tomcat-embed-websocket:jar:10.1.28:compile
+[INFO] |  +- org.springframework:spring-web:jar:6.1.12:compile
+[INFO] |  |  +- org.springframework:spring-beans:jar:6.1.12:compile
+[INFO] |  |  \- io.micrometer:micrometer-observation:jar:1.13.3:compile
+[INFO] |  |     \- io.micrometer:micrometer-commons:jar:1.13.3:compile
+[INFO] |  \- org.springframework:spring-webmvc:jar:6.1.12:compile
+[INFO] |     +- org.springframework:spring-aop:jar:6.1.12:compile
+[INFO] |     +- org.springframework:spring-context:jar:6.1.12:compile
+[INFO] |     \- org.springframework:spring-expression:jar:6.1.12:compile
+[INFO] +- org.springframework.boot:spring-boot-starter:jar:3.3.3:compile
+[INFO] |  +- org.springframework.boot:spring-boot:jar:3.3.3:compile
+[INFO] |  +- org.springframework.boot:spring-boot-autoconfigure:jar:3.3.3:compile
+[INFO] |  +- org.springframework.boot:spring-boot-starter-logging:jar:3.3.3:compile
+[INFO] |  |  +- ch.qos.logback:logback-classic:jar:1.5.7:compile
+[INFO] |  |  |  \- ch.qos.logback:logback-core:jar:1.5.7:compile
+[INFO] |  |  +- org.apache.logging.log4j:log4j-to-slf4j:jar:2.23.1:compile
+[INFO] |  |  |  \- org.apache.logging.log4j:log4j-api:jar:2.23.1:compile
+[INFO] |  |  \- org.slf4j:jul-to-slf4j:jar:2.0.16:compile
+[INFO] |  +- jakarta.annotation:jakarta.annotation-api:jar:2.1.1:compile
+[INFO] |  +- org.springframework:spring-core:jar:6.1.12:compile
+[INFO] |  |  \- org.springframework:spring-jcl:jar:6.1.12:compile
+[INFO] |  \- org.yaml:snakeyaml:jar:2.2:compile
+[INFO] \- org.springframework.boot:spring-boot-starter-test:jar:3.3.3:test
+[INFO]    +- org.springframework.boot:spring-boot-test:jar:3.3.3:test
+[INFO]    +- org.springframework.boot:spring-boot-test-autoconfigure:jar:3.3.3:test
+[INFO]    +- com.jayway.jsonpath:json-path:jar:2.9.0:test
+[INFO]    |  \- org.slf4j:slf4j-api:jar:2.0.16:compile
+[INFO]    +- jakarta.xml.bind:jakarta.xml.bind-api:jar:4.0.2:compile
+[INFO]    |  \- jakarta.activation:jakarta.activation-api:jar:2.1.3:compile
+[INFO]    +- net.minidev:json-smart:jar:2.5.1:test
+[INFO]    |  \- net.minidev:accessors-smart:jar:2.5.1:test
+[INFO]    |     \- org.ow2.asm:asm:jar:9.6:test
+[INFO]    +- org.assertj:assertj-core:jar:3.25.3:test
+[INFO]    |  \- net.bytebuddy:byte-buddy:jar:1.14.19:test
+[INFO]    +- org.awaitility:awaitility:jar:4.2.2:test
+[INFO]    +- org.hamcrest:hamcrest:jar:2.2:test
+[INFO]    +- org.junit.jupiter:junit-jupiter:jar:5.10.3:test
+[INFO]    |  +- org.junit.jupiter:junit-jupiter-api:jar:5.10.3:test
+[INFO]    |  |  +- org.opentest4j:opentest4j:jar:1.3.0:test
+[INFO]    |  |  +- org.junit.platform:junit-platform-commons:jar:1.10.3:test
+[INFO]    |  |  \- org.apiguardian:apiguardian-api:jar:1.1.2:test
+[INFO]    |  +- org.junit.jupiter:junit-jupiter-params:jar:5.10.3:test
+[INFO]    |  \- org.junit.jupiter:junit-jupiter-engine:jar:5.10.3:test
+[INFO]    |     \- org.junit.platform:junit-platform-engine:jar:1.10.3:test
+[INFO]    +- org.mockito:mockito-core:jar:5.11.0:test
+[INFO]    |  +- net.bytebuddy:byte-buddy-agent:jar:1.14.19:test
+[INFO]    |  \- org.objenesis:objenesis:jar:3.3:test
+[INFO]    +- org.mockito:mockito-junit-jupiter:jar:5.11.0:test
+[INFO]    +- org.skyscreamer:jsonassert:jar:1.5.3:test
+[INFO]    |  \- com.vaadin.external.google:android-json:jar:0.0.20131108.vaadin1:test
+[INFO]    +- org.springframework:spring-test:jar:6.1.12:test
+[INFO]    \- org.xmlunit:xmlunit-core:jar:2.9.1:test
+[INFO] 
+[INFO] ---------------------< com.bookstore:auth-service >---------------------
+[INFO] Building auth-service 0.0.1-SNAPSHOT                               [4/8]
+[INFO]   from auth-service/pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- dependency:3.6.1:tree (default-cli) @ auth-service ---
+[INFO] com.bookstore:auth-service:jar:0.0.1-SNAPSHOT
+[INFO] +- org.springframework.boot:spring-boot-starter:jar:3.3.3:compile
+[INFO] |  +- org.springframework.boot:spring-boot:jar:3.3.3:compile
+[INFO] |  |  \- org.springframework:spring-context:jar:6.1.12:compile
+[INFO] |  |     +- org.springframework:spring-aop:jar:6.1.12:compile
+[INFO] |  |     +- org.springframework:spring-beans:jar:6.1.12:compile
+[INFO] |  |     +- org.springframework:spring-expression:jar:6.1.12:compile
+[INFO] |  |     \- io.micrometer:micrometer-observation:jar:1.13.3:compile
+[INFO] |  |        \- io.micrometer:micrometer-commons:jar:1.13.3:compile
+[INFO] |  +- org.springframework.boot:spring-boot-autoconfigure:jar:3.3.3:compile
+[INFO] |  +- org.springframework.boot:spring-boot-starter-logging:jar:3.3.3:compile
+[INFO] |  |  +- ch.qos.logback:logback-classic:jar:1.5.7:compile
+[INFO] |  |  |  \- ch.qos.logback:logback-core:jar:1.5.7:compile
+[INFO] |  |  +- org.apache.logging.log4j:log4j-to-slf4j:jar:2.23.1:compile
+[INFO] |  |  |  \- org.apache.logging.log4j:log4j-api:jar:2.23.1:compile
+[INFO] |  |  \- org.slf4j:jul-to-slf4j:jar:2.0.16:compile
+[INFO] |  +- jakarta.annotation:jakarta.annotation-api:jar:2.1.1:compile
+[INFO] |  +- org.springframework:spring-core:jar:6.1.12:compile
+[INFO] |  |  \- org.springframework:spring-jcl:jar:6.1.12:compile
+[INFO] |  \- org.yaml:snakeyaml:jar:2.2:compile
+[INFO] \- org.springframework.boot:spring-boot-starter-test:jar:3.3.3:test
+[INFO]    +- org.springframework.boot:spring-boot-test:jar:3.3.3:test
+[INFO]    +- org.springframework.boot:spring-boot-test-autoconfigure:jar:3.3.3:test
+[INFO]    +- com.jayway.jsonpath:json-path:jar:2.9.0:test
+[INFO]    |  \- org.slf4j:slf4j-api:jar:2.0.16:compile
+[INFO]    +- jakarta.xml.bind:jakarta.xml.bind-api:jar:4.0.2:test
+[INFO]    |  \- jakarta.activation:jakarta.activation-api:jar:2.1.3:test
+[INFO]    +- net.minidev:json-smart:jar:2.5.1:test
+[INFO]    |  \- net.minidev:accessors-smart:jar:2.5.1:test
+[INFO]    |     \- org.ow2.asm:asm:jar:9.6:test
+[INFO]    +- org.assertj:assertj-core:jar:3.25.3:test
+[INFO]    |  \- net.bytebuddy:byte-buddy:jar:1.14.19:test
+[INFO]    +- org.awaitility:awaitility:jar:4.2.2:test
+[INFO]    +- org.hamcrest:hamcrest:jar:2.2:test
+[INFO]    +- org.junit.jupiter:junit-jupiter:jar:5.10.3:test
+[INFO]    |  +- org.junit.jupiter:junit-jupiter-api:jar:5.10.3:test
+[INFO]    |  |  +- org.opentest4j:opentest4j:jar:1.3.0:test
+[INFO]    |  |  +- org.junit.platform:junit-platform-commons:jar:1.10.3:test
+[INFO]    |  |  \- org.apiguardian:apiguardian-api:jar:1.1.2:test
+[INFO]    |  +- org.junit.jupiter:junit-jupiter-params:jar:5.10.3:test
+[INFO]    |  \- org.junit.jupiter:junit-jupiter-engine:jar:5.10.3:test
+[INFO]    |     \- org.junit.platform:junit-platform-engine:jar:1.10.3:test
+[INFO]    +- org.mockito:mockito-core:jar:5.11.0:test
+[INFO]    |  +- net.bytebuddy:byte-buddy-agent:jar:1.14.19:test
+[INFO]    |  \- org.objenesis:objenesis:jar:3.3:test
+[INFO]    +- org.mockito:mockito-junit-jupiter:jar:5.11.0:test
+[INFO]    +- org.skyscreamer:jsonassert:jar:1.5.3:test
+[INFO]    |  \- com.vaadin.external.google:android-json:jar:0.0.20131108.vaadin1:test
+[INFO]    +- org.springframework:spring-test:jar:6.1.12:test
+[INFO]    \- org.xmlunit:xmlunit-core:jar:2.9.1:test
+[INFO] 
+[INFO] ---------------------< com.bookstore:book-service >---------------------
+[INFO] Building book-service 0.0.1-SNAPSHOT                               [5/8]
+[INFO]   from book-service/pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- dependency:3.6.1:tree (default-cli) @ book-service ---
+[INFO] com.bookstore:book-service:jar:0.0.1-SNAPSHOT
+[INFO] +- org.springframework.boot:spring-boot-starter:jar:3.3.3:compile
+[INFO] |  +- org.springframework.boot:spring-boot:jar:3.3.3:compile
+[INFO] |  |  \- org.springframework:spring-context:jar:6.1.12:compile
+[INFO] |  |     +- org.springframework:spring-aop:jar:6.1.12:compile
+[INFO] |  |     +- org.springframework:spring-beans:jar:6.1.12:compile
+[INFO] |  |     +- org.springframework:spring-expression:jar:6.1.12:compile
+[INFO] |  |     \- io.micrometer:micrometer-observation:jar:1.13.3:compile
+[INFO] |  |        \- io.micrometer:micrometer-commons:jar:1.13.3:compile
+[INFO] |  +- org.springframework.boot:spring-boot-autoconfigure:jar:3.3.3:compile
+[INFO] |  +- org.springframework.boot:spring-boot-starter-logging:jar:3.3.3:compile
+[INFO] |  |  +- ch.qos.logback:logback-classic:jar:1.5.7:compile
+[INFO] |  |  |  \- ch.qos.logback:logback-core:jar:1.5.7:compile
+[INFO] |  |  +- org.apache.logging.log4j:log4j-to-slf4j:jar:2.23.1:compile
+[INFO] |  |  |  \- org.apache.logging.log4j:log4j-api:jar:2.23.1:compile
+[INFO] |  |  \- org.slf4j:jul-to-slf4j:jar:2.0.16:compile
+[INFO] |  +- jakarta.annotation:jakarta.annotation-api:jar:2.1.1:compile
+[INFO] |  +- org.springframework:spring-core:jar:6.1.12:compile
+[INFO] |  |  \- org.springframework:spring-jcl:jar:6.1.12:compile
+[INFO] |  \- org.yaml:snakeyaml:jar:2.2:compile
+[INFO] \- org.springframework.boot:spring-boot-starter-test:jar:3.3.3:test
+[INFO]    +- org.springframework.boot:spring-boot-test:jar:3.3.3:test
+[INFO]    +- org.springframework.boot:spring-boot-test-autoconfigure:jar:3.3.3:test
+[INFO]    +- com.jayway.jsonpath:json-path:jar:2.9.0:test
+[INFO]    |  \- org.slf4j:slf4j-api:jar:2.0.16:compile
+[INFO]    +- jakarta.xml.bind:jakarta.xml.bind-api:jar:4.0.2:test
+[INFO]    |  \- jakarta.activation:jakarta.activation-api:jar:2.1.3:test
+[INFO]    +- net.minidev:json-smart:jar:2.5.1:test
+[INFO]    |  \- net.minidev:accessors-smart:jar:2.5.1:test
+[INFO]    |     \- org.ow2.asm:asm:jar:9.6:test
+[INFO]    +- org.assertj:assertj-core:jar:3.25.3:test
+[INFO]    |  \- net.bytebuddy:byte-buddy:jar:1.14.19:test
+[INFO]    +- org.awaitility:awaitility:jar:4.2.2:test
+[INFO]    +- org.hamcrest:hamcrest:jar:2.2:test
+[INFO]    +- org.junit.jupiter:junit-jupiter:jar:5.10.3:test
+[INFO]    |  +- org.junit.jupiter:junit-jupiter-api:jar:5.10.3:test
+[INFO]    |  |  +- org.opentest4j:opentest4j:jar:1.3.0:test
+[INFO]    |  |  +- org.junit.platform:junit-platform-commons:jar:1.10.3:test
+[INFO]    |  |  \- org.apiguardian:apiguardian-api:jar:1.1.2:test
+[INFO]    |  +- org.junit.jupiter:junit-jupiter-params:jar:5.10.3:test
+[INFO]    |  \- org.junit.jupiter:junit-jupiter-engine:jar:5.10.3:test
+[INFO]    |     \- org.junit.platform:junit-platform-engine:jar:1.10.3:test
+[INFO]    +- org.mockito:mockito-core:jar:5.11.0:test
+[INFO]    |  +- net.bytebuddy:byte-buddy-agent:jar:1.14.19:test
+[INFO]    |  \- org.objenesis:objenesis:jar:3.3:test
+[INFO]    +- org.mockito:mockito-junit-jupiter:jar:5.11.0:test
+[INFO]    +- org.skyscreamer:jsonassert:jar:1.5.3:test
+[INFO]    |  \- com.vaadin.external.google:android-json:jar:0.0.20131108.vaadin1:test
+[INFO]    +- org.springframework:spring-test:jar:6.1.12:test
+[INFO]    \- org.xmlunit:xmlunit-core:jar:2.9.1:test
+[INFO] 
+[INFO] ---------------------< com.bookstore:loan-service >---------------------
+[INFO] Building loan-service 0.0.1-SNAPSHOT                               [6/8]
+[INFO]   from loan-service/pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- dependency:3.6.1:tree (default-cli) @ loan-service ---
+[INFO] com.bookstore:loan-service:jar:0.0.1-SNAPSHOT
+[INFO] +- org.springframework.boot:spring-boot-starter:jar:3.3.3:compile
+[INFO] |  +- org.springframework.boot:spring-boot:jar:3.3.3:compile
+[INFO] |  |  \- org.springframework:spring-context:jar:6.1.12:compile
+[INFO] |  |     +- org.springframework:spring-aop:jar:6.1.12:compile
+[INFO] |  |     +- org.springframework:spring-beans:jar:6.1.12:compile
+[INFO] |  |     +- org.springframework:spring-expression:jar:6.1.12:compile
+[INFO] |  |     \- io.micrometer:micrometer-observation:jar:1.13.3:compile
+[INFO] |  |        \- io.micrometer:micrometer-commons:jar:1.13.3:compile
+[INFO] |  +- org.springframework.boot:spring-boot-autoconfigure:jar:3.3.3:compile
+[INFO] |  +- org.springframework.boot:spring-boot-starter-logging:jar:3.3.3:compile
+[INFO] |  |  +- ch.qos.logback:logback-classic:jar:1.5.7:compile
+[INFO] |  |  |  \- ch.qos.logback:logback-core:jar:1.5.7:compile
+[INFO] |  |  +- org.apache.logging.log4j:log4j-to-slf4j:jar:2.23.1:compile
+[INFO] |  |  |  \- org.apache.logging.log4j:log4j-api:jar:2.23.1:compile
+[INFO] |  |  \- org.slf4j:jul-to-slf4j:jar:2.0.16:compile
+[INFO] |  +- jakarta.annotation:jakarta.annotation-api:jar:2.1.1:compile
+[INFO] |  +- org.springframework:spring-core:jar:6.1.12:compile
+[INFO] |  |  \- org.springframework:spring-jcl:jar:6.1.12:compile
+[INFO] |  \- org.yaml:snakeyaml:jar:2.2:compile
+[INFO] \- org.springframework.boot:spring-boot-starter-test:jar:3.3.3:test
+[INFO]    +- org.springframework.boot:spring-boot-test:jar:3.3.3:test
+[INFO]    +- org.springframework.boot:spring-boot-test-autoconfigure:jar:3.3.3:test
+[INFO]    +- com.jayway.jsonpath:json-path:jar:2.9.0:test
+[INFO]    |  \- org.slf4j:slf4j-api:jar:2.0.16:compile
+[INFO]    +- jakarta.xml.bind:jakarta.xml.bind-api:jar:4.0.2:test
+[INFO]    |  \- jakarta.activation:jakarta.activation-api:jar:2.1.3:test
+[INFO]    +- net.minidev:json-smart:jar:2.5.1:test
+[INFO]    |  \- net.minidev:accessors-smart:jar:2.5.1:test
+[INFO]    |     \- org.ow2.asm:asm:jar:9.6:test
+[INFO]    +- org.assertj:assertj-core:jar:3.25.3:test
+[INFO]    |  \- net.bytebuddy:byte-buddy:jar:1.14.19:test
+[INFO]    +- org.awaitility:awaitility:jar:4.2.2:test
+[INFO]    +- org.hamcrest:hamcrest:jar:2.2:test
+[INFO]    +- org.junit.jupiter:junit-jupiter:jar:5.10.3:test
+[INFO]    |  +- org.junit.jupiter:junit-jupiter-api:jar:5.10.3:test
+[INFO]    |  |  +- org.opentest4j:opentest4j:jar:1.3.0:test
+[INFO]    |  |  +- org.junit.platform:junit-platform-commons:jar:1.10.3:test
+[INFO]    |  |  \- org.apiguardian:apiguardian-api:jar:1.1.2:test
+[INFO]    |  +- org.junit.jupiter:junit-jupiter-params:jar:5.10.3:test
+[INFO]    |  \- org.junit.jupiter:junit-jupiter-engine:jar:5.10.3:test
+[INFO]    |     \- org.junit.platform:junit-platform-engine:jar:1.10.3:test
+[INFO]    +- org.mockito:mockito-core:jar:5.11.0:test
+[INFO]    |  +- net.bytebuddy:byte-buddy-agent:jar:1.14.19:test
+[INFO]    |  \- org.objenesis:objenesis:jar:3.3:test
+[INFO]    +- org.mockito:mockito-junit-jupiter:jar:5.11.0:test
+[INFO]    +- org.skyscreamer:jsonassert:jar:1.5.3:test
+[INFO]    |  \- com.vaadin.external.google:android-json:jar:0.0.20131108.vaadin1:test
+[INFO]    +- org.springframework:spring-test:jar:6.1.12:test
+[INFO]    \- org.xmlunit:xmlunit-core:jar:2.9.1:test
+[INFO] 
+[INFO] ------------------< com.bookstore:inventory-service >-------------------
+[INFO] Building inventory-service 0.0.1-SNAPSHOT                          [7/8]
+[INFO]   from inventory-service/pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- dependency:3.6.1:tree (default-cli) @ inventory-service ---
+[INFO] com.bookstore:inventory-service:jar:0.0.1-SNAPSHOT
+[INFO] +- org.springframework.boot:spring-boot-starter:jar:3.3.3:compile
+[INFO] |  +- org.springframework.boot:spring-boot:jar:3.3.3:compile
+[INFO] |  |  \- org.springframework:spring-context:jar:6.1.12:compile
+[INFO] |  |     +- org.springframework:spring-aop:jar:6.1.12:compile
+[INFO] |  |     +- org.springframework:spring-beans:jar:6.1.12:compile
+[INFO] |  |     +- org.springframework:spring-expression:jar:6.1.12:compile
+[INFO] |  |     \- io.micrometer:micrometer-observation:jar:1.13.3:compile
+[INFO] |  |        \- io.micrometer:micrometer-commons:jar:1.13.3:compile
+[INFO] |  +- org.springframework.boot:spring-boot-autoconfigure:jar:3.3.3:compile
+[INFO] |  +- org.springframework.boot:spring-boot-starter-logging:jar:3.3.3:compile
+[INFO] |  |  +- ch.qos.logback:logback-classic:jar:1.5.7:compile
+[INFO] |  |  |  \- ch.qos.logback:logback-core:jar:1.5.7:compile
+[INFO] |  |  +- org.apache.logging.log4j:log4j-to-slf4j:jar:2.23.1:compile
+[INFO] |  |  |  \- org.apache.logging.log4j:log4j-api:jar:2.23.1:compile
+[INFO] |  |  \- org.slf4j:jul-to-slf4j:jar:2.0.16:compile
+[INFO] |  +- jakarta.annotation:jakarta.annotation-api:jar:2.1.1:compile
+[INFO] |  +- org.springframework:spring-core:jar:6.1.12:compile
+[INFO] |  |  \- org.springframework:spring-jcl:jar:6.1.12:compile
+[INFO] |  \- org.yaml:snakeyaml:jar:2.2:compile
+[INFO] \- org.springframework.boot:spring-boot-starter-test:jar:3.3.3:test
+[INFO]    +- org.springframework.boot:spring-boot-test:jar:3.3.3:test
+[INFO]    +- org.springframework.boot:spring-boot-test-autoconfigure:jar:3.3.3:test
+[INFO]    +- com.jayway.jsonpath:json-path:jar:2.9.0:test
+[INFO]    |  \- org.slf4j:slf4j-api:jar:2.0.16:compile
+[INFO]    +- jakarta.xml.bind:jakarta.xml.bind-api:jar:4.0.2:test
+[INFO]    |  \- jakarta.activation:jakarta.activation-api:jar:2.1.3:test
+[INFO]    +- net.minidev:json-smart:jar:2.5.1:test
+[INFO]    |  \- net.minidev:accessors-smart:jar:2.5.1:test
+[INFO]    |     \- org.ow2.asm:asm:jar:9.6:test
+[INFO]    +- org.assertj:assertj-core:jar:3.25.3:test
+[INFO]    |  \- net.bytebuddy:byte-buddy:jar:1.14.19:test
+[INFO]    +- org.awaitility:awaitility:jar:4.2.2:test
+[INFO]    +- org.hamcrest:hamcrest:jar:2.2:test
+[INFO]    +- org.junit.jupiter:junit-jupiter:jar:5.10.3:test
+[INFO]    |  +- org.junit.jupiter:junit-jupiter-api:jar:5.10.3:test
+[INFO]    |  |  +- org.opentest4j:opentest4j:jar:1.3.0:test
+[INFO]    |  |  +- org.junit.platform:junit-platform-commons:jar:1.10.3:test
+[INFO]    |  |  \- org.apiguardian:apiguardian-api:jar:1.1.2:test
+[INFO]    |  +- org.junit.jupiter:junit-jupiter-params:jar:5.10.3:test
+[INFO]    |  \- org.junit.jupiter:junit-jupiter-engine:jar:5.10.3:test
+[INFO]    |     \- org.junit.platform:junit-platform-engine:jar:1.10.3:test
+[INFO]    +- org.mockito:mockito-core:jar:5.11.0:test
+[INFO]    |  +- net.bytebuddy:byte-buddy-agent:jar:1.14.19:test
+[INFO]    |  \- org.objenesis:objenesis:jar:3.3:test
+[INFO]    +- org.mockito:mockito-junit-jupiter:jar:5.11.0:test
+[INFO]    +- org.skyscreamer:jsonassert:jar:1.5.3:test
+[INFO]    |  \- com.vaadin.external.google:android-json:jar:0.0.20131108.vaadin1:test
+[INFO]    +- org.springframework:spring-test:jar:6.1.12:test
+[INFO]    \- org.xmlunit:xmlunit-core:jar:2.9.1:test
+[INFO] 
+[INFO] -----------------< com.bookstore:notification-service >-----------------
+[INFO] Building notification-service 0.0.1-SNAPSHOT                       [8/8]
+[INFO]   from notification-service/pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- dependency:3.6.1:tree (default-cli) @ notification-service ---
+[INFO] com.bookstore:notification-service:jar:0.0.1-SNAPSHOT
+[INFO] +- org.springframework.boot:spring-boot-starter:jar:3.3.3:compile
+[INFO] |  +- org.springframework.boot:spring-boot:jar:3.3.3:compile
+[INFO] |  |  \- org.springframework:spring-context:jar:6.1.12:compile
+[INFO] |  |     +- org.springframework:spring-aop:jar:6.1.12:compile
+[INFO] |  |     +- org.springframework:spring-beans:jar:6.1.12:compile
+[INFO] |  |     +- org.springframework:spring-expression:jar:6.1.12:compile
+[INFO] |  |     \- io.micrometer:micrometer-observation:jar:1.13.3:compile
+[INFO] |  |        \- io.micrometer:micrometer-commons:jar:1.13.3:compile
+[INFO] |  +- org.springframework.boot:spring-boot-autoconfigure:jar:3.3.3:compile
+[INFO] |  +- org.springframework.boot:spring-boot-starter-logging:jar:3.3.3:compile
+[INFO] |  |  +- ch.qos.logback:logback-classic:jar:1.5.7:compile
+[INFO] |  |  |  \- ch.qos.logback:logback-core:jar:1.5.7:compile
+[INFO] |  |  +- org.apache.logging.log4j:log4j-to-slf4j:jar:2.23.1:compile
+[INFO] |  |  |  \- org.apache.logging.log4j:log4j-api:jar:2.23.1:compile
+[INFO] |  |  \- org.slf4j:jul-to-slf4j:jar:2.0.16:compile
+[INFO] |  +- jakarta.annotation:jakarta.annotation-api:jar:2.1.1:compile
+[INFO] |  +- org.springframework:spring-core:jar:6.1.12:compile
+[INFO] |  |  \- org.springframework:spring-jcl:jar:6.1.12:compile
+[INFO] |  \- org.yaml:snakeyaml:jar:2.2:compile
+[INFO] \- org.springframework.boot:spring-boot-starter-test:jar:3.3.3:test
+[INFO]    +- org.springframework.boot:spring-boot-test:jar:3.3.3:test
+[INFO]    +- org.springframework.boot:spring-boot-test-autoconfigure:jar:3.3.3:test
+[INFO]    +- com.jayway.jsonpath:json-path:jar:2.9.0:test
+[INFO]    |  \- org.slf4j:slf4j-api:jar:2.0.16:compile
+[INFO]    +- jakarta.xml.bind:jakarta.xml.bind-api:jar:4.0.2:test
+[INFO]    |  \- jakarta.activation:jakarta.activation-api:jar:2.1.3:test
+[INFO]    +- net.minidev:json-smart:jar:2.5.1:test
+[INFO]    |  \- net.minidev:accessors-smart:jar:2.5.1:test
+[INFO]    |     \- org.ow2.asm:asm:jar:9.6:test
+[INFO]    +- org.assertj:assertj-core:jar:3.25.3:test
+[INFO]    |  \- net.bytebuddy:byte-buddy:jar:1.14.19:test
+[INFO]    +- org.awaitility:awaitility:jar:4.2.2:test
+[INFO]    +- org.hamcrest:hamcrest:jar:2.2:test
+[INFO]    +- org.junit.jupiter:junit-jupiter:jar:5.10.3:test
+[INFO]    |  +- org.junit.jupiter:junit-jupiter-api:jar:5.10.3:test
+[INFO]    |  |  +- org.opentest4j:opentest4j:jar:1.3.0:test
+[INFO]    |  |  +- org.junit.platform:junit-platform-commons:jar:1.10.3:test
+[INFO]    |  |  \- org.apiguardian:apiguardian-api:jar:1.1.2:test
+[INFO]    |  +- org.junit.jupiter:junit-jupiter-params:jar:5.10.3:test
+[INFO]    |  \- org.junit.jupiter:junit-jupiter-engine:jar:5.10.3:test
+[INFO]    |     \- org.junit.platform:junit-platform-engine:jar:1.10.3:test
+[INFO]    +- org.mockito:mockito-core:jar:5.11.0:test
+[INFO]    |  +- net.bytebuddy:byte-buddy-agent:jar:1.14.19:test
+[INFO]    |  \- org.objenesis:objenesis:jar:3.3:test
+[INFO]    +- org.mockito:mockito-junit-jupiter:jar:5.11.0:test
+[INFO]    +- org.skyscreamer:jsonassert:jar:1.5.3:test
+[INFO]    |  \- com.vaadin.external.google:android-json:jar:0.0.20131108.vaadin1:test
+[INFO]    +- org.springframework:spring-test:jar:6.1.12:test
+[INFO]    \- org.xmlunit:xmlunit-core:jar:2.9.1:test
+[INFO] ------------------------------------------------------------------------
+[INFO] Reactor Summary for book-hub-system 0.0.1-SNAPSHOT:
+[INFO] 
+[INFO] book-hub-system .................................... SUCCESS [  0.543 s]
+[INFO] gateway-service .................................... SUCCESS [  0.016 s]
+[INFO] eureka-service ..................................... SUCCESS [  0.214 s]
+[INFO] auth-service ....................................... SUCCESS [  0.013 s]
+[INFO] book-service ....................................... SUCCESS [  0.012 s]
+[INFO] loan-service ....................................... SUCCESS [  0.012 s]
+[INFO] inventory-service .................................. SUCCESS [  0.018 s]
+[INFO] notification-service ............................... SUCCESS [  0.010 s]
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  1.104 s
+[INFO] Finished at: 2026-08-11T09:04:45+05:00
+[INFO] ------------------------------------------------------------------------

@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  mysql-db:
+    image: mysql:8.0
+    container_name: book-hub-mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword123
+      MYSQL_USER: my_db
+      MYSQL_PASSWORD: book
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./mysql/init:/docker-entrypoint-initdb.d
+    networks:
+      - book-hub-net
+
+volumes:
+  mysql_data:
+    driver: local
+
+networks:
+  book-hub-net:
+    driver: bridge
