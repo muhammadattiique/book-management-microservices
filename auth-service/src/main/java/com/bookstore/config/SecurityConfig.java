@@ -4,6 +4,7 @@ import com.bookstore.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -56,6 +57,8 @@ public class SecurityConfig {
                 .cors(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(HttpMethod.POST, "/api/v1/auth/**", "/api/auth/**", "/v1/auth/**", "/auth/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/auth/**", "/api/auth/**", "/v1/auth/**", "/auth/**").permitAll()
                         .requestMatchers("/api/v1/auth/**", "/api/auth/**", "/v1/auth/**", "/auth/**").permitAll()
                         .anyRequest().authenticated()
                 )
