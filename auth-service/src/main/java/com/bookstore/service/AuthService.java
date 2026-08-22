@@ -6,11 +6,12 @@ import com.bookstore.entity.User;
 import com.bookstore.repository.UserRepository;
 import com.bookstore.security.JwtService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.util.HashMap;
-import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -19,12 +20,13 @@ public class AuthService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
+    private final AuthenticationManager authenticationManager;
 
     public UserResponse register(AuthRequest request) {
         User user = User.builder()
                 .username(request.getUsername())
-                .password(passwordEncoder.encode(request.getPassword())) // BCrypt hashing
-                .role("ADMIN") // Set to ADMIN if you want to test admin endpoints right away
+                .password(passwordEncoder.encode(request.getPassword()))
+                .role("ROLE_MEMBER") // Assign default role with ROLE_ prefix
                 .build();
 
         User savedUser = userRepository.save(user);
@@ -37,14 +39,14 @@ public class AuthService {
     }
 
     public String login(AuthRequest request) {
-        User user = userRepository.findByUsername(request.getUsername())
-                .orElseThrow(() -> new RuntimeException("Invalid username or password"));
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
+        );
 
-        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-            throw new RuntimeException("Invalid username or password");
-        }
+        // Extracts the authenticated UserDetails (your User entity)
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
 
-        // Pass claims or role if your JwtService supports it, or generate token with username
-        return jwtService.generateToken(user.getUsername());
+        // Passes UserDetails so the token includes the "roles" claim
+        return jwtService.generateToken(userDetails);
     }
 }

@@ -8,7 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/api/v1/auth") // Updated from /api/auth to /api/v1/auth
 @RequiredArgsConstructor
 public class AuthController {
 
@@ -22,6 +22,6 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody AuthRequest request) {
         String token = authService.login(request);
-        return ResponseEntity.ok(token); // Returns signed JWT token
+        return ResponseEntity.ok(token);
     }
 }
