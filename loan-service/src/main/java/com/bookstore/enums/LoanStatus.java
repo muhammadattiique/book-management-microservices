@@ -3,5 +3,6 @@ package com.bookstore.enums;
 public enum LoanStatus {
     ACTIVE,
     RETURNED,
-    OVERDUE
+    OVERDUE,
+    RENEWAL_PENDING
 }

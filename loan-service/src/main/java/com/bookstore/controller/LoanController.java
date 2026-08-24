@@ -26,7 +26,6 @@ public class LoanController {
 
     private final LoanService loanService;
 
-    // Helper method to robustly resolve numeric ID or string username to a unique Long memberId
     private Long resolveMemberId(Authentication authentication) {
         if (authentication == null || authentication.getName() == null) {
             return 1L;
@@ -35,7 +34,6 @@ public class LoanController {
         try {
             return Long.parseLong(identity);
         } catch (NumberFormatException e) {
-            // Generates a consistent deterministic positive Long ID from the username string (e.g., "Abdullah")
             return Math.abs((long) identity.hashCode());
         }
     }
@@ -50,9 +48,26 @@ public class LoanController {
 
         Long memberId = resolveMemberId(authentication);
         request.setMemberId(memberId);
-        log.info("Creating loan for resolved member ID: {}", memberId);
+
+        // Token se authenticated user ka naam set karna
+        if (authentication != null && authentication.getName() != null) {
+            request.setMemberName(authentication.getName());
+        } else {
+            request.setMemberName("Attique");
+        }
+
+        log.info("Creating loan for resolved member ID: {} and Name: {}", memberId, request.getMemberName());
 
         return ResponseEntity.status(HttpStatus.CREATED).body(loanService.createLoan(request));
+    }
+
+    @Operation(summary = "Get all loans in the system (Admin)")
+    @ApiResponse(responseCode = "200", description = "List of all loans retrieved")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasRole('ADMIN')")
+    @GetMapping("/admin/all")
+    public ResponseEntity<List<LoanResponse>> getAllLoans() {
+        log.info("Fetching all loans in the system for admin view");
+        return ResponseEntity.ok(loanService.getAllLoans());
     }
 
     @Operation(summary = "Get current user's loans")
@@ -62,7 +77,6 @@ public class LoanController {
     public ResponseEntity<List<LoanResponse>> getMyLoans(Authentication authentication) {
         String identity = authentication != null ? authentication.getName() : "1";
         log.info("Fetching loans for authenticated user identity: {}", identity);
-
         return ResponseEntity.ok(loanService.getLoansForUser(identity));
     }
 
@@ -90,11 +104,25 @@ public class LoanController {
         return ResponseEntity.ok(loanService.returnLoan(id));
     }
 
-    @Operation(summary = "Renew a loan")
-    @ApiResponse(responseCode = "200", description = "Loan successfully renewed")
+    @Operation(summary = "Request a loan renewal")
+    @ApiResponse(responseCode = "200", description = "Loan renewal requested")
     @PreAuthorize("hasRole('MEMBER') or hasRole('STUDENT') or hasRole('ADMIN') or hasRole('LIBRARIAN')")
     @PatchMapping("/{id}/renew")
     public ResponseEntity<LoanResponse> renewLoan(@PathVariable Long id) {
         return ResponseEntity.ok(loanService.renewLoan(id));
+    }
+
+    @Operation(summary = "Admin approve loan renewal")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasRole('ADMIN')")
+    @PostMapping("/{id}/approve-renewal")
+    public ResponseEntity<LoanResponse> approveRenewal(@PathVariable Long id) {
+        return ResponseEntity.ok(loanService.approveRenewal(id));
+    }
+
+    @Operation(summary = "Admin reject loan renewal")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasRole('ADMIN')")
+    @PostMapping("/{id}/reject-renewal")
+    public ResponseEntity<LoanResponse> rejectRenewal(@PathVariable Long id) {
+        return ResponseEntity.ok(loanService.rejectRenewal(id));
     }
 }

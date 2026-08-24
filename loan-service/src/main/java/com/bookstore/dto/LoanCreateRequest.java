@@ -1,29 +1,32 @@
 package com.bookstore.dto;
 
 import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.util.List;
 
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class LoanCreateRequest {
-    @NotNull(message = "Member ID is required")
     private Long memberId;
-
-    @NotNull(message = "Due date is required")
+    private String memberName; // <-- Yeh field add karna zaroori tha
     private LocalDate dueDate;
 
-    @NotEmpty(message = "A loan must contain at least one item")
-    private List<LoanItemDto> items;
+    @NotEmpty(message = "Loan must contain at least one item.")
+    private List<LoanItemRequest> items;
 
     @Data
-    public static class LoanItemDto {
-        @NotNull(message = "Book ID is required")
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class LoanItemRequest {
         private Long bookId;
-
-        @NotNull(message = "Copy ID is required")
         private Long copyId;
     }
 }

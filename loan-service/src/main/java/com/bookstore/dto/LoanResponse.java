@@ -17,6 +17,7 @@ import java.util.List;
 public class LoanResponse {
     private Long id;
     private Long memberId;
+    private String memberName; // <-- Yeh field yahan add hona zaroori hai
     private LocalDate loanDate;
     private LocalDate dueDate;
     private LocalDate returnDate;
@@ -33,6 +34,6 @@ public class LoanResponse {
         private Long id;
         private Long bookId;
         private Long copyId;
-        private String bookTitle; // Real book title for frontend display
+        private String bookTitle;
     }
 }

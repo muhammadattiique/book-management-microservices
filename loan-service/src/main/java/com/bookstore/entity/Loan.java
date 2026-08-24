@@ -26,6 +26,9 @@ public class Loan {
     @Column(nullable = false)
     private Long memberId;
 
+    @Column(name = "member_name")
+    private String memberName; // <-- Borrower name store karne ke liye naya field
+
     @Column(nullable = false)
     private LocalDate loanDate;
 
@@ -38,7 +41,6 @@ public class Loan {
     @Column(name = "fine_amount")
     private Double fineAmount = 0.0;
 
-    // NEW FIELD: Tracks if the book has already been renewed once
     @Builder.Default
     @Column(nullable = false)
     private boolean renewed = false;

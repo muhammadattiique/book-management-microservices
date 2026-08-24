@@ -34,10 +34,27 @@ public class LoanServiceImpl implements LoanService {
 
     @Override
     public LoanResponse createLoan(LoanCreateRequest request) {
-        log.info("Creating new loan for member ID: {}", request.getMemberId());
+        log.info("Creating new loan for member ID: {} and Name: {}", request.getMemberId(), request.getMemberName());
 
         if (request.getItems() == null || request.getItems().isEmpty()) {
             throw new IllegalArgumentException("Loan must contain at least one item.");
+        }
+
+        // Prevent duplicate active loans for the same book by the same user
+        List<Loan> userLoans = loanRepository.findByMemberId(request.getMemberId());
+        for (Loan existingLoan : userLoans) {
+            if (existingLoan.getStatus() == LoanStatus.ACTIVE ||
+                    existingLoan.getStatus() == LoanStatus.OVERDUE ||
+                    existingLoan.getStatus() == LoanStatus.RENEWAL_PENDING) {
+                for (LoanItem existingItem : existingLoan.getItems()) {
+                    for (var requestedItem : request.getItems()) {
+                        if (existingItem.getBookId().equals(requestedItem.getBookId())) {
+                            log.warn("User ID {} already has an active loan for book ID {}", request.getMemberId(), requestedItem.getBookId());
+                            throw new IllegalStateException("You already have an active loan for this book.");
+                        }
+                    }
+                }
+            }
         }
 
         for (var itemDto : request.getItems()) {
@@ -54,6 +71,7 @@ public class LoanServiceImpl implements LoanService {
 
         Loan loan = Loan.builder()
                 .memberId(request.getMemberId())
+                .memberName(request.getMemberName() != null ? request.getMemberName() : "Attique")
                 .loanDate(LocalDate.now())
                 .dueDate(request.getDueDate() != null ? request.getDueDate() : LocalDate.now().plusDays(14))
                 .fineAmount(0.0)
@@ -83,6 +101,15 @@ public class LoanServiceImpl implements LoanService {
         }
 
         return mapToResponse(savedLoan);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<LoanResponse> getAllLoans() {
+        log.info("Fetching all loans in the system");
+        return loanRepository.findAll().stream()
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -155,28 +182,57 @@ public class LoanServiceImpl implements LoanService {
 
     @Override
     public LoanResponse renewLoan(Long id) {
-        log.info("Processing renewal for loan ID: {}", id);
+        log.info("User requested renewal for loan ID: {}", id);
         Loan loan = loanRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Loan not found with ID: " + id));
 
-        if (loan.getStatus() != LoanStatus.ACTIVE) {
-            throw new IllegalStateException("Only active loans can be renewed. Current status: " + loan.getStatus());
+        if (loan.getStatus() != LoanStatus.ACTIVE && loan.getStatus() != LoanStatus.OVERDUE) {
+            throw new IllegalStateException("Only active or overdue loans can request renewal.");
         }
 
-        // VALIDATION: Ensure user can only renew once
         if (loan.isRenewed()) {
             throw new IllegalStateException("This book has already been renewed once and cannot be renewed again.");
         }
 
-        // Extend due date by strictly 7 days
-        LocalDate newDueDate = loan.getDueDate().plusDays(7);
-        loan.setDueDate(newDueDate);
-        loan.setRenewed(true); // Mark as renewed
-
+        loan.setStatus(LoanStatus.RENEWAL_PENDING);
         Loan updatedLoan = loanRepository.save(loan);
-        log.info("Successfully renewed loan ID: {}. New due date extended by 7 days: {}", id, newDueDate);
+        log.info("Loan ID {} marked as RENEWAL_PENDING, waiting for admin approval.", id);
 
         return mapToResponse(updatedLoan);
+    }
+
+    @Override
+    public LoanResponse approveRenewal(Long id) {
+        log.info("Admin approving renewal for loan ID: {}", id);
+        Loan loan = loanRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Loan not found with ID: " + id));
+
+        if (loan.getStatus() != LoanStatus.RENEWAL_PENDING) {
+            throw new IllegalStateException("This loan does not have a pending renewal request.");
+        }
+
+        LocalDate newDueDate = loan.getDueDate().plusDays(7);
+        loan.setDueDate(newDueDate);
+        loan.setRenewed(true);
+        loan.setStatus(LoanStatus.ACTIVE);
+
+        Loan updatedLoan = loanRepository.save(loan);
+        log.info("Renewal approved successfully for loan ID: {}. New due date: {}", id, newDueDate);
+
+        return mapToResponse(updatedLoan);
+    }
+
+    @Override
+    public LoanResponse rejectRenewal(Long id) {
+        log.info("Admin rejecting renewal for loan ID: {}", id);
+        Loan loan = loanRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Loan not found with ID: " + id));
+
+        if (loan.getStatus() == LoanStatus.RENEWAL_PENDING) {
+            loan.setStatus(LoanStatus.ACTIVE);
+            loan = loanRepository.save(loan);
+        }
+        return mapToResponse(loan);
     }
 
     private LoanResponse mapToResponse(Loan loan) {
@@ -202,6 +258,7 @@ public class LoanServiceImpl implements LoanService {
         return LoanResponse.builder()
                 .id(loan.getId())
                 .memberId(loan.getMemberId())
+                .memberName(loan.getMemberName()) // <-- Mapped successfully
                 .loanDate(loan.getLoanDate())
                 .dueDate(loan.getDueDate())
                 .returnDate(loan.getReturnDate())
