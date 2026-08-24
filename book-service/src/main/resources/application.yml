@@ -5,7 +5,7 @@ spring:
   application:
     name: book-service
   datasource:
-    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://mysql:3306/book_db?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true}
+    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://mysql:3306/bookhub_db?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true}
     username: ${SPRING_DATASOURCE_USERNAME:my_db}
     password: ${SPRING_DATASOURCE_PASSWORD:book}
     driver-class-name: com.mysql.cj.jdbc.Driver

@@ -74,7 +74,7 @@ services:
       eureka-service:
         condition: service_started
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/auth_db?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/bookhub_db?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
       - SPRING_DATASOURCE_USERNAME=my_db
       - SPRING_DATASOURCE_PASSWORD=book
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-service:8761/eureka/
@@ -92,7 +92,7 @@ services:
       eureka-service:
         condition: service_started
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/book_db?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/bookhub_db?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
       - SPRING_DATASOURCE_USERNAME=my_db
       - SPRING_DATASOURCE_PASSWORD=book
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-service:8761/eureka/
@@ -112,7 +112,7 @@ services:
       eureka-service:
         condition: service_started
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/loan_db?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/bookhub_db?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
       - SPRING_DATASOURCE_USERNAME=my_db
       - SPRING_DATASOURCE_PASSWORD=book
       - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:29092
@@ -133,7 +133,7 @@ services:
       eureka-service:
         condition: service_started
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/inventory_db?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/bookhub_db?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
       - SPRING_DATASOURCE_USERNAME=my_db
       - SPRING_DATASOURCE_PASSWORD=book
       - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:29092
@@ -154,7 +154,7 @@ services:
       eureka-service:
         condition: service_started
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/notification_db?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/bookhub_db?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
       - SPRING_DATASOURCE_USERNAME=my_db
       - SPRING_DATASOURCE_PASSWORD=book
       - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:29092
