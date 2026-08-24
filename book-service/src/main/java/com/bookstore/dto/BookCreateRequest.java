@@ -34,9 +34,13 @@ public class BookCreateRequest {
     @DecimalMin(value = "0.0", inclusive = false, message = "Price must be greater than zero")
     private BigDecimal price;
 
-    @NotNull(message = "Author ID is required")
-    private Long authorId;
+    @NotBlank(message = "Author name is required")
+    private String authorName;
 
-    @NotNull(message = "Category ID is required")
-    private Long categoryId;
+    @NotBlank(message = "Category name is required")
+    private String categoryName;
+
+    @NotNull(message = "Total copies is required")
+    @Min(value = 1, message = "Must have at least 1 copy")
+    private Integer totalCopies;
 }

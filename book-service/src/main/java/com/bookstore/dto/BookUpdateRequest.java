@@ -35,4 +35,7 @@ public class BookUpdateRequest {
     private Long authorId;
 
     private Long categoryId;
+
+    // --- ADDED: Catch the total copies from the React form ---
+    private Integer totalCopies;
 }

@@ -1,6 +1,7 @@
 package com.bookstore.controller;
 
 import com.bookstore.dto.AuthRequest;
+import com.bookstore.dto.AuthResponse;
 import com.bookstore.dto.UserResponse;
 import com.bookstore.service.AuthService;
 import lombok.RequiredArgsConstructor;
@@ -20,9 +21,9 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody AuthRequest request) {
-        String token = authService.login(request);
-        return ResponseEntity.ok(token);
+    public ResponseEntity<AuthResponse> login(@RequestBody AuthRequest request) {
+        AuthResponse response = authService.login(request);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/me")
@@ -31,7 +32,6 @@ public class AuthController {
             return ResponseEntity.status(401).body("Missing or invalid Authorization header");
         }
 
-        // Return a success response showing your token arrived successfully
         return ResponseEntity.ok("Authenticated successfully with token!");
     }
 }

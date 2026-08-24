@@ -24,7 +24,7 @@ public class Loan {
     private Long id;
 
     @Column(nullable = false)
-    private Long memberId; // Microservice identifier
+    private Long memberId;
 
     @Column(nullable = false)
     private LocalDate loanDate;
@@ -33,6 +33,15 @@ public class Loan {
     private LocalDate dueDate;
 
     private LocalDate returnDate;
+
+    @Builder.Default
+    @Column(name = "fine_amount")
+    private Double fineAmount = 0.0;
+
+    // NEW FIELD: Tracks if the book has already been renewed once
+    @Builder.Default
+    @Column(nullable = false)
+    private boolean renewed = false;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

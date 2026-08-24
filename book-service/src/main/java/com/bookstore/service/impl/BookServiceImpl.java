@@ -1,8 +1,10 @@
 package com.bookstore.service.impl;
 
+import com.bookstore.client.InventoryClient;
 import com.bookstore.dto.BookCreateRequest;
 import com.bookstore.dto.BookResponse;
 import com.bookstore.dto.BookUpdateRequest;
+import com.bookstore.dto.InventorySummaryDto;
 import com.bookstore.entity.Author;
 import com.bookstore.entity.Book;
 import com.bookstore.entity.Category;
@@ -34,22 +36,40 @@ public class BookServiceImpl implements BookService {
     private final AuthorRepository authorRepository;
     private final CategoryRepository categoryRepository;
     private final BookMapper bookMapper;
+    private final InventoryClient inventoryClient;
+
+    private BookResponse mapToBookResponseWithInventory(Book book) {
+        BookResponse response = bookMapper.toBookResponse(book);
+        try {
+            InventorySummaryDto summary = inventoryClient.getInventorySummary(book.getId());
+            if (summary != null) {
+                response.setTotalCopies(summary.getTotalCopies() != null ? summary.getTotalCopies() : 0L);
+                response.setAvailableCopies(summary.getAvailableCopies() != null ? summary.getAvailableCopies() : 0L);
+            } else {
+                response.setTotalCopies(0L);
+                response.setAvailableCopies(0L);
+            }
+        } catch (Exception e) {
+            log.warn("Could not fetch inventory summary for book ID: {}. Error: {}", book.getId(), e.getMessage());
+            response.setTotalCopies(0L);
+            response.setAvailableCopies(0L);
+        }
+        return response;
+    }
 
     @Override
     public BookResponse createBook(BookCreateRequest request) {
-        log.info("Attempting to create a new book with ISBN: {}", request.getIsbn());
+        log.info("Attempting to create a new book with ISBN: {}. Total Copies received: {}",
+                request.getIsbn(), request.getTotalCopies());
 
-        Author author = authorRepository.findById(request.getAuthorId())
-                .orElseThrow(() -> {
-                    log.warn("Author not found with ID: {}", request.getAuthorId());
-                    return new ResourceNotFoundException("Author not found with ID: " + request.getAuthorId());
-                });
+        String authorName = request.getAuthorName() != null ? request.getAuthorName().trim() : "";
+        String categoryName = request.getCategoryName() != null ? request.getCategoryName().trim() : "";
 
-        Category category = categoryRepository.findById(request.getCategoryId())
-                .orElseThrow(() -> {
-                    log.warn("Category not found with ID: {}", request.getCategoryId());
-                    return new ResourceNotFoundException("Category not found with ID: " + request.getCategoryId());
-                });
+        Author author = authorRepository.findByNameIgnoreCase(authorName)
+                .orElseGet(() -> authorRepository.save(Author.builder().name(authorName).build()));
+
+        Category category = categoryRepository.findByNameIgnoreCase(categoryName)
+                .orElseGet(() -> categoryRepository.save(Category.builder().name(categoryName).build()));
 
         Book book = Book.builder()
                 .isbn(request.getIsbn())
@@ -64,9 +84,18 @@ public class BookServiceImpl implements BookService {
                 .build();
 
         Book savedBook = bookRepository.save(book);
-        log.info("Successfully created book with ID: {}", savedBook.getId());
 
-        return bookMapper.toBookResponse(savedBook);
+        // Synchronous Direct Rest Call to initialize physical copies in inventory_db
+        if (request.getTotalCopies() != null && request.getTotalCopies() > 0) {
+            try {
+                inventoryClient.initInventory(savedBook.getId(), request.getTotalCopies());
+                log.info("Successfully initialized {} inventory copies for Book ID: {}", request.getTotalCopies(), savedBook.getId());
+            } catch (Exception e) {
+                log.error("Failed to initialize inventory for book ID: {}", savedBook.getId(), e);
+            }
+        }
+
+        return mapToBookResponseWithInventory(savedBook);
     }
 
     @Override
@@ -74,39 +103,31 @@ public class BookServiceImpl implements BookService {
     public BookResponse getBookById(Long id) {
         log.info("Fetching book with ID: {}", id);
         Book book = bookRepository.findById(id)
-                .orElseThrow(() -> {
-                    log.warn("Book not found with ID: {}", id);
-                    return new ResourceNotFoundException("Book not found with ID: " + id);
-                });
-        return bookMapper.toBookResponse(book);
+                .orElseThrow(() -> new ResourceNotFoundException("Book not found with ID: " + id));
+        return mapToBookResponseWithInventory(book);
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<BookResponse> getAllBooks() {
-        log.info("Fetching all books from the database");
         return bookRepository.findAll().stream()
-                .map(bookMapper::toBookResponse)
+                .map(this::mapToBookResponseWithInventory)
                 .collect(Collectors.toList());
     }
 
     @Override
     @Transactional(readOnly = true)
     public Page<BookResponse> searchBooks(Specification<Book> spec, Pageable pageable) {
-        log.info("Searching books with filters, page number: {}, size: {}", pageable.getPageNumber(), pageable.getPageSize());
         return bookRepository.findAll(spec, pageable)
-                .map(bookMapper::toBookResponse);
+                .map(this::mapToBookResponseWithInventory);
     }
 
     @Override
     public BookResponse updateBook(Long id, BookUpdateRequest request) {
-        log.info("Attempting to update book with ID: {}", id);
+        log.info("Attempting to update book with ID: {}. Total copies: {}", id, request.getTotalCopies());
 
         Book existingBook = bookRepository.findById(id)
-                .orElseThrow(() -> {
-                    log.warn("Book update failed. Book not found with ID: {}", id);
-                    return new ResourceNotFoundException("Book not found with ID: " + id);
-                });
+                .orElseThrow(() -> new ResourceNotFoundException("Book not found with ID: " + id));
 
         if (request.getIsbn() != null) existingBook.setIsbn(request.getIsbn());
         if (request.getTitle() != null) existingBook.setTitle(request.getTitle());
@@ -129,46 +150,61 @@ public class BookServiceImpl implements BookService {
         }
 
         Book updatedBook = bookRepository.save(existingBook);
-        log.info("Successfully updated book with ID: {}", updatedBook.getId());
 
-        return bookMapper.toBookResponse(updatedBook);
+        // Synchronous Direct Rest Call to update copies in inventory_db
+        if (request.getTotalCopies() != null && request.getTotalCopies() > 0) {
+            try {
+                inventoryClient.initInventory(updatedBook.getId(), request.getTotalCopies());
+                log.info("Successfully updated inventory copies for Book ID: {}", updatedBook.getId());
+            } catch (Exception e) {
+                log.error("Failed to update inventory for book ID: {}", updatedBook.getId(), e);
+            }
+        }
+
+        return mapToBookResponseWithInventory(updatedBook);
     }
 
     @Override
     public void deleteBook(Long id) {
         log.info("Attempting to delete book with ID: {}", id);
         if (!bookRepository.existsById(id)) {
-            log.warn("Book deletion failed. Book not found with ID: {}", id);
             throw new ResourceNotFoundException("Book not found with ID: " + id);
         }
+
+        // 1. Delete from book_db
         bookRepository.deleteById(id);
-        log.info("Successfully deleted book with ID: {}", id);
+        log.info("Successfully deleted book with ID: {} from book_db", id);
+
+        // 2. Synchronous Direct Rest Call to delete records from inventory_db
+        try {
+            inventoryClient.deleteInventoryByBookId(id);
+            log.info("Successfully deleted inventory records for Book ID: {}", id);
+        } catch (Exception e) {
+            log.error("Failed to delete inventory records for Book ID: {}", id, e);
+        }
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<BookResponse> getBooksByAuthor(Long authorId) {
-        log.info("Fetching books for author ID: {}", authorId);
         return bookRepository.findByAuthorId(authorId).stream()
-                .map(bookMapper::toBookResponse)
+                .map(this::mapToBookResponseWithInventory)
                 .collect(Collectors.toList());
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<BookResponse> getBooksByCategoryName(String categoryName) {
-        log.info("Fetching books for category name: {}", categoryName);
         return bookRepository.findByCategoryNameIgnoreCase(categoryName).stream()
-                .map(bookMapper::toBookResponse)
+                .map(this::mapToBookResponseWithInventory)
                 .collect(Collectors.toList());
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<BookResponse> getBooksCheaperThan(BigDecimal maxPrice) {
-        log.info("Fetching books with max price: {}", maxPrice);
         return bookRepository.findBooksCheaperThan(maxPrice).stream()
-                .map(bookMapper::toBookResponse)
+                .map(this::mapToBookResponseWithInventory)
                 .collect(Collectors.toList());
     }
 }

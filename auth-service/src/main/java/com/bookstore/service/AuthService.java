@@ -1,6 +1,7 @@
 package com.bookstore.service;
 
 import com.bookstore.dto.AuthRequest;
+import com.bookstore.dto.AuthResponse;
 import com.bookstore.dto.UserResponse;
 import com.bookstore.entity.User;
 import com.bookstore.repository.UserRepository;
@@ -38,7 +39,7 @@ public class AuthService {
                 .build();
     }
 
-    public String login(AuthRequest request) {
+    public AuthResponse login(AuthRequest request) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
         );
@@ -46,7 +47,12 @@ public class AuthService {
         // Extracts the authenticated UserDetails (your User entity)
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
 
-        // Passes UserDetails so the token includes the "roles" claim
-        return jwtService.generateToken(userDetails);
+        // Generates the JWT token
+        String jwtToken = jwtService.generateToken(userDetails);
+
+        // Wraps the token in the AuthResponse DTO
+        return AuthResponse.builder()
+                .token(jwtToken)
+                .build();
     }
 }

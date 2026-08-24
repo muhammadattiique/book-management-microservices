@@ -26,4 +26,8 @@ public class BookResponse {
     private CategoryResponse category;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+
+    // Inventory copy count fields for the frontend
+    private Long totalCopies;
+    private Long availableCopies;
 }

@@ -1,18 +1,42 @@
 package com.bookstore.event;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import java.time.LocalDate;
 import java.util.List;
 
-@Data
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
 public class BookReturnedEvent {
     private Long loanId;
-    private List<Long> copyIds;
+    private List<ItemDto> items; // Matches LoanServiceImpl and InventoryEventListener
     private LocalDate returnDate;
+
+    public BookReturnedEvent() {}
+
+    public BookReturnedEvent(Long loanId, List<ItemDto> items, LocalDate returnDate) {
+        this.loanId = loanId;
+        this.items = items;
+        this.returnDate = returnDate;
+    }
+
+    public Long getLoanId() {
+        return loanId;
+    }
+
+    public void setLoanId(Long loanId) {
+        this.loanId = loanId;
+    }
+
+    public List<ItemDto> getItems() {
+        return items;
+    }
+
+    public void setItems(List<ItemDto> items) {
+        this.items = items;
+    }
+
+    public LocalDate getReturnDate() {
+        return returnDate;
+    }
+
+    public void setReturnDate(LocalDate returnDate) {
+        this.returnDate = returnDate;
+    }
 }
