@@ -14,7 +14,9 @@ public class CorsConfig {
     @Bean
     public CorsWebFilter corsWebFilter() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("http://localhost:5173"));
+
+        // Fix: setAllowedOriginPatterns Vercel aur Localhost dono ko credentials ke sath allow karta hai
+        config.setAllowedOriginPatterns(List.of("*"));
         config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);
