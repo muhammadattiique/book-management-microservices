@@ -4,45 +4,37 @@ server:
 spring:
   application:
     name: gateway-service
-
   cloud:
     gateway:
       discovery:
         locator:
           enabled: true
           lower-case-service-id: true
-
       routes:
         - id: auth-service
           uri: lb://auth-service
           predicates:
             - Path=/api/v1/auth/**
-
         - id: notification-service
           uri: lb://notification-service
           predicates:
             - Path=/api/v1/notifications/**
-
         - id: book-service
           uri: lb://book-service
           predicates:
             - Path=/api/v1/books/**
-
         - id: author-service
           uri: lb://book-service
           predicates:
             - Path=/api/v1/authors/**
-
         - id: category-service
           uri: lb://book-service
           predicates:
             - Path=/api/v1/categories/**
-
         - id: loan-service
           uri: lb://loan-service
           predicates:
             - Path=/api/v1/loans/**
-
         - id: inventory-service
           uri: lb://inventory-service
           predicates:
@@ -51,6 +43,8 @@ spring:
             - RewritePath=/api/v1/inventory/?(?<segment>.*), /api/v1/${segment}
 
 eureka:
+  instance:
+    prefer-ip-address: true
   client:
     service-url:
       defaultZone: ${EUREKA_CLIENT_SERVICEURL_DEFAULTZONE:http://eureka-service:8761/eureka/}

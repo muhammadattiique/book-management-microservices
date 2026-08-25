@@ -2,6 +2,8 @@ server:
   port: ${SERVER_PORT:8761}
 
 spring:
+  application:
+    name: eureka-service
   datasource:
     url: ${SPRING_DATASOURCE_URL:jdbc:mysql://mysql:3306/bookhub_db?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true}
     username: ${SPRING_DATASOURCE_USERNAME:my_db}
@@ -15,7 +17,11 @@ spring:
     bootstrap-servers: ${SPRING_KAFKA_BOOTSTRAP_SERVERS:kafka:29092}
 
 eureka:
+  instance:
+    prefer-ip-address: true
   client:
+    register-with-eureka: false
+    fetch-registry: false
     service-url:
       defaultZone: ${EUREKA_CLIENT_SERVICEURL_DEFAULTZONE:http://eureka-service:8761/eureka/}
 
