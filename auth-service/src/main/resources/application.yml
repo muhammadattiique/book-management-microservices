@@ -1,12 +1,11 @@
 server:
-  port: ${PORT:${SERVER_PORT:8081}} # Render ki dynamic PORT ko priority dega
+  port: ${PORT:${SERVER_PORT:8081}}
 
 spring:
   application:
     name: auth-service
   datasource:
-    # Yahan apna real cloud MySQL URL dalein (ya Render ka environment variable)
-    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://your-cloud-db-host:3306/bookhub_db?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true}
+    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://mysql:3306/bookhub_db?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true}
     username: ${SPRING_DATASOURCE_USERNAME:my_db}
     password: ${SPRING_DATASOURCE_PASSWORD:book}
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -22,14 +21,13 @@ eureka:
     prefer-ip-address: true
   client:
     service-url:
-      # Agar eureka-service render par alag URL par hai, toh woh URL yahan aana chahiye
       defaultZone: ${EUREKA_CLIENT_SERVICEURL_DEFAULTZONE:http://eureka-service:8761/eureka/}
 
 logging:
   level:
     org.springframework.security: TRACE
     org.springframework.web: TRACE
-    org.springframework.web.cors: TRaceae
+    org.springframework.web.cors: TRACE
 
 jwt:
   secret: ${JWT_SECRET:myverysecretkeythatneedstobesecureandlongenoughforjwtverification123456}
