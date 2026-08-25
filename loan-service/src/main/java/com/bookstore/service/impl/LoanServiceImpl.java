@@ -1,13 +1,15 @@
 package com.bookstore.service.impl;
 
-import com.bookstore.client.BookClient;
-import com.bookstore.client.InventoryClient;
 import com.bookstore.dto.LoanCreateRequest;
 import com.bookstore.dto.LoanResponse;
+import com.bookstore.entity.Book;
+import com.bookstore.entity.Inventory;
 import com.bookstore.entity.Loan;
 import com.bookstore.entity.LoanItem;
 import com.bookstore.enums.LoanStatus;
 import com.bookstore.exception.ResourceNotFoundException;
+import com.bookstore.repository.BookRepository;
+import com.bookstore.repository.InventoryRepository;
 import com.bookstore.repository.LoanRepository;
 import com.bookstore.service.LoanService;
 import lombok.RequiredArgsConstructor;
@@ -27,8 +29,8 @@ import java.util.stream.Collectors;
 public class LoanServiceImpl implements LoanService {
 
     private final LoanRepository loanRepository;
-    private final InventoryClient inventoryClient;
-    private final BookClient bookClient;
+    private final InventoryRepository inventoryRepository;
+    private final BookRepository bookRepository;
 
     private static final double DAILY_FINE_RATE = 1.0;
 
@@ -40,32 +42,31 @@ public class LoanServiceImpl implements LoanService {
             throw new IllegalArgumentException("Loan must contain at least one item.");
         }
 
-        // Prevent duplicate active loans for the same book by the same user
+        // Rule: At a time user can only have ONE active loan across any book
         List<Loan> userLoans = loanRepository.findByMemberId(request.getMemberId());
-        for (Loan existingLoan : userLoans) {
-            if (existingLoan.getStatus() == LoanStatus.ACTIVE ||
-                    existingLoan.getStatus() == LoanStatus.OVERDUE ||
-                    existingLoan.getStatus() == LoanStatus.RENEWAL_PENDING) {
-                for (LoanItem existingItem : existingLoan.getItems()) {
-                    for (var requestedItem : request.getItems()) {
-                        if (existingItem.getBookId().equals(requestedItem.getBookId())) {
-                            log.warn("User ID {} already has an active loan for book ID {}", request.getMemberId(), requestedItem.getBookId());
-                            throw new IllegalStateException("You already have an active loan for this book.");
-                        }
-                    }
-                }
-            }
+        boolean hasActiveLoan = userLoans.stream().anyMatch(loan ->
+                loan.getStatus() == LoanStatus.ACTIVE ||
+                        loan.getStatus() == LoanStatus.OVERDUE ||
+                        loan.getStatus() == LoanStatus.RENEWAL_PENDING
+        );
+
+        if (hasActiveLoan) {
+            log.warn("User ID {} already has an active loan and cannot borrow another book.", request.getMemberId());
+            throw new IllegalStateException("Aap pehle hi aik active loan rakhte hain. Aik waqt mein sirf aik hi book loan li ja sakti hai.");
         }
 
+        // Check availability for requested items in Unified Database
         for (var itemDto : request.getItems()) {
             if (itemDto.getCopyId() == null) {
                 itemDto.setCopyId(1L);
             }
 
-            boolean isAvailable = inventoryClient.checkAvailability(itemDto.getBookId(), itemDto.getCopyId());
-            if (!isAvailable) {
-                log.warn("Book copy ID {} is not available for loan.", itemDto.getCopyId());
-                throw new IllegalStateException("Book copy is not available.");
+            Inventory inventory = inventoryRepository.findByBookId(itemDto.getBookId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Inventory not found for book ID: " + itemDto.getBookId()));
+
+            if (inventory.getAvailableCopies() == null || inventory.getAvailableCopies() <= 0) {
+                log.warn("Book ID {} is out of stock.", itemDto.getBookId());
+                throw new IllegalStateException("Book is out of stock and not available for loan.");
             }
         }
 
@@ -83,7 +84,7 @@ public class LoanServiceImpl implements LoanService {
                 .map(itemDto -> LoanItem.builder()
                         .loan(loan)
                         .bookId(itemDto.getBookId())
-                        .copyId(itemDto.getCopyId() != null ? itemDto.getCopyId() : 1L)
+                        .copyId(itemDto.getCopyId())
                         .build())
                 .collect(Collectors.toList());
 
@@ -91,12 +92,15 @@ public class LoanServiceImpl implements LoanService {
         Loan savedLoan = loanRepository.save(loan);
         log.info("Successfully created loan with ID: {}", savedLoan.getId());
 
+        // Rule: Decrement available copies in Unified Database (Minus inventory)
         for (var item : savedLoan.getItems()) {
-            try {
-                inventoryClient.borrowBook(item.getBookId());
-                log.info("Successfully decremented inventory for Book ID: {}", item.getBookId());
-            } catch (Exception e) {
-                log.error("Failed to decrement inventory for Book ID: {}", item.getBookId(), e);
+            Inventory inventory = inventoryRepository.findByBookId(item.getBookId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Inventory not found"));
+
+            if (inventory.getAvailableCopies() > 0) {
+                inventory.setAvailableCopies(inventory.getAvailableCopies() - 1);
+                inventoryRepository.save(inventory);
+                log.info("Successfully decremented inventory for Book ID: {}. Remaining available copies: {}", item.getBookId(), inventory.getAvailableCopies());
             }
         }
 
@@ -168,13 +172,18 @@ public class LoanServiceImpl implements LoanService {
         Loan updatedLoan = loanRepository.save(loan);
         log.info("Successfully returned loan ID: {}", id);
 
+        // Rule: Increment available copies back in Unified Database (Plus inventory)
         for (var item : updatedLoan.getItems()) {
-            try {
-                inventoryClient.returnBook(item.getBookId());
-                log.info("Successfully incremented inventory for Book ID: {}", item.getBookId());
-            } catch (Exception e) {
-                log.error("Failed to increment inventory for Book ID: {}", item.getBookId(), e);
+            Inventory inventory = inventoryRepository.findByBookId(item.getBookId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Inventory not found"));
+
+            inventory.setAvailableCopies(inventory.getAvailableCopies() + 1);
+            // Ensure available copies don't exceed total copies
+            if (inventory.getTotalCopies() != null && inventory.getAvailableCopies() > inventory.getTotalCopies()) {
+                inventory.setAvailableCopies(inventory.getTotalCopies());
             }
+            inventoryRepository.save(inventory);
+            log.info("Successfully incremented inventory for Book ID: {}. Current available copies: {}", item.getBookId(), inventory.getAvailableCopies());
         }
 
         return mapToResponse(updatedLoan);
@@ -190,6 +199,7 @@ public class LoanServiceImpl implements LoanService {
             throw new IllegalStateException("Only active or overdue loans can request renewal.");
         }
 
+        // Rule: Block further renewals if already renewed once
         if (loan.isRenewed()) {
             throw new IllegalStateException("This book has already been renewed once and cannot be renewed again.");
         }
@@ -211,6 +221,7 @@ public class LoanServiceImpl implements LoanService {
             throw new IllegalStateException("This loan does not have a pending renewal request.");
         }
 
+        // Rule: Extend due date by exactly 7 days after admin approval, allow only once
         LocalDate newDueDate = loan.getDueDate().plusDays(7);
         loan.setDueDate(newDueDate);
         loan.setRenewed(true);
@@ -237,15 +248,9 @@ public class LoanServiceImpl implements LoanService {
 
     private LoanResponse mapToResponse(Loan loan) {
         List<LoanResponse.LoanItemResponse> itemResponses = loan.getItems().stream().map(item -> {
-            String bookTitle = "Unknown Book";
-            try {
-                var bookDto = bookClient.getBookById(item.getBookId());
-                if (bookDto != null && bookDto.getTitle() != null) {
-                    bookTitle = bookDto.getTitle();
-                }
-            } catch (Exception e) {
-                log.warn("Could not fetch book title for book ID: {}", item.getBookId());
-            }
+            String bookTitle = bookRepository.findById(item.getBookId())
+                    .map(Book::getTitle)
+                    .orElse("Unknown Book");
 
             return LoanResponse.LoanItemResponse.builder()
                     .id(item.getId())
@@ -258,7 +263,7 @@ public class LoanServiceImpl implements LoanService {
         return LoanResponse.builder()
                 .id(loan.getId())
                 .memberId(loan.getMemberId())
-                .memberName(loan.getMemberName()) // <-- Mapped successfully
+                .memberName(loan.getMemberName())
                 .loanDate(loan.getLoanDate())
                 .dueDate(loan.getDueDate())
                 .returnDate(loan.getReturnDate())
