@@ -1,18 +1,18 @@
 package com.bookstore.service.impl;
 
+import com.bookstore.client.InventoryClient;
 import com.bookstore.dto.BookCreateRequest;
 import com.bookstore.dto.BookResponse;
 import com.bookstore.dto.BookUpdateRequest;
+import com.bookstore.dto.InventorySummaryDto;
 import com.bookstore.entity.Author;
 import com.bookstore.entity.Book;
 import com.bookstore.entity.Category;
-import com.bookstore.entity.Inventory; // Aap ki Inventory entity ka package
 import com.bookstore.exception.ResourceNotFoundException;
 import com.bookstore.mapper.BookMapper;
 import com.bookstore.repository.AuthorRepository;
 import com.bookstore.repository.BookRepository;
 import com.bookstore.repository.CategoryRepository;
-import com.bookstore.repository.InventoryRepository; // Direct Repository injected
 import com.bookstore.service.BookService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,17 +35,16 @@ public class BookServiceImpl implements BookService {
     private final BookRepository bookRepository;
     private final AuthorRepository authorRepository;
     private final CategoryRepository categoryRepository;
-    private final InventoryRepository inventoryRepository; // Direct DB access for unified database
     private final BookMapper bookMapper;
+    private final InventoryClient inventoryClient; // Feign client back for decoupled modules
 
     private BookResponse mapToBookResponseWithInventory(Book book) {
         BookResponse response = bookMapper.toBookResponse(book);
         try {
-            // Unified Database se direct inventory fetch kar rahe hain
-            Inventory inventory = inventoryRepository.findByBookId(book.getId()).orElse(null);
-            if (inventory != null) {
-                response.setTotalCopies(inventory.getTotalCopies() != null ? inventory.getTotalCopies() : 0L);
-                response.setAvailableCopies(inventory.getAvailableCopies() != null ? inventory.getAvailableCopies() : 0L);
+            InventorySummaryDto summary = inventoryClient.getInventorySummary(book.getId());
+            if (summary != null) {
+                response.setTotalCopies(summary.getTotalCopies() != null ? summary.getTotalCopies() : 0L);
+                response.setAvailableCopies(summary.getAvailableCopies() != null ? summary.getAvailableCopies() : 0L);
             } else {
                 response.setTotalCopies(0L);
                 response.setAvailableCopies(0L);
@@ -86,19 +85,13 @@ public class BookServiceImpl implements BookService {
 
         Book savedBook = bookRepository.save(book);
 
-        // Unified Database mein direct Inventory row save/initialize kar rahe hain
-        long initialCopies = (request.getTotalCopies() != null && request.getTotalCopies() > 0) ? request.getTotalCopies() : 0L;
-        try {
-            Inventory inventory = inventoryRepository.findByBookId(savedBook.getId())
-                    .orElse(Inventory.builder().bookId(savedBook.getId()).build());
-
-            inventory.setTotalCopies(initialCopies);
-            inventory.setAvailableCopies(initialCopies);
-            inventoryRepository.save(inventory);
-
-            log.info("Successfully initialized {} inventory copies directly for Book ID: {}", initialCopies, savedBook.getId());
-        } catch (Exception e) {
-            log.error("Failed to initialize inventory for book ID: {}", savedBook.getId(), e);
+        if (request.getTotalCopies() != null && request.getTotalCopies() > 0) {
+            try {
+                inventoryClient.initInventory(savedBook.getId(), request.getTotalCopies());
+                log.info("Successfully initialized {} inventory copies for Book ID: {}", request.getTotalCopies(), savedBook.getId());
+            } catch (Exception e) {
+                log.error("Failed to initialize inventory for book ID: {}", savedBook.getId(), e);
+            }
         }
 
         return mapToBookResponseWithInventory(savedBook);
@@ -157,17 +150,10 @@ public class BookServiceImpl implements BookService {
 
         Book updatedBook = bookRepository.save(existingBook);
 
-        // Direct Inventory Update in Unified Database
         if (request.getTotalCopies() != null && request.getTotalCopies() >= 0) {
             try {
-                Inventory inventory = inventoryRepository.findByBookId(updatedBook.getId())
-                        .orElse(Inventory.builder().bookId(updatedBook.getId()).build());
-
-                inventory.setTotalCopies(request.getTotalCopies());
-                inventory.setAvailableCopies(request.getTotalCopies()); // ya apni requirement ke mutabiq
-                inventoryRepository.save(inventory);
-
-                log.info("Successfully updated inventory copies directly for Book ID: {}", updatedBook.getId());
+                inventoryClient.initInventory(updatedBook.getId(), request.getTotalCopies());
+                log.info("Successfully updated inventory copies for Book ID: {}", updatedBook.getId());
             } catch (Exception e) {
                 log.error("Failed to update inventory for book ID: {}", updatedBook.getId(), e);
             }
@@ -183,17 +169,15 @@ public class BookServiceImpl implements BookService {
             throw new ResourceNotFoundException("Book not found with ID: " + id);
         }
 
-        // 1. Delete from inventory table first (foreign key constraints bachane ke liye)
+        bookRepository.deleteById(id);
+        log.info("Successfully deleted book with ID: {} from database", id);
+
         try {
-            inventoryRepository.findByBookId(id).ifPresent(inventoryRepository::delete);
+            inventoryClient.deleteInventoryByBookId(id);
             log.info("Successfully deleted inventory records for Book ID: {}", id);
         } catch (Exception e) {
             log.error("Failed to delete inventory records for Book ID: {}", id, e);
         }
-
-        // 2. Delete Book
-        bookRepository.deleteById(id);
-        log.info("Successfully deleted book with ID: {} from database", id);
     }
 
     @Override
