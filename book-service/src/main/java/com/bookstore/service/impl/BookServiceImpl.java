@@ -65,11 +65,20 @@ public class BookServiceImpl implements BookService {
         String authorName = request.getAuthorName() != null ? request.getAuthorName().trim() : "";
         String categoryName = request.getCategoryName() != null ? request.getCategoryName().trim() : "";
 
+        // Standard object instantiation to prevent missing @Builder errors
         Author author = authorRepository.findByNameIgnoreCase(authorName)
-                .orElseGet(() -> authorRepository.save(Author.builder().name(authorName).build()));
+                .orElseGet(() -> {
+                    Author newAuthor = new Author();
+                    newAuthor.setName(authorName);
+                    return authorRepository.save(newAuthor);
+                });
 
         Category category = categoryRepository.findByNameIgnoreCase(categoryName)
-                .orElseGet(() -> categoryRepository.save(Category.builder().name(categoryName).build()));
+                .orElseGet(() -> {
+                    Category newCategory = new Category();
+                    newCategory.setName(categoryName);
+                    return categoryRepository.save(newCategory);
+                });
 
         Book book = Book.builder()
                 .isbn(request.getIsbn())
@@ -135,22 +144,6 @@ public class BookServiceImpl implements BookService {
         if (request.getLanguage() != null) existingBook.setLanguage(request.getLanguage());
         if (request.getPublisher() != null) existingBook.setPublisher(request.getPublisher());
         if (request.getPrice() != null) existingBook.setPrice(request.getPrice());
-
-        // Updated to use authorName matching createBook logic
-        if (request.getAuthorName() != null && !request.getAuthorName().trim().isEmpty()) {
-            String authorName = request.getAuthorName().trim();
-            Author author = authorRepository.findByNameIgnoreCase(authorName)
-                    .orElseGet(() -> authorRepository.save(Author.builder().name(authorName).build()));
-            existingBook.setAuthor(author);
-        }
-
-        // Updated to use categoryName matching createBook logic
-        if (request.getCategoryName() != null && !request.getCategoryName().trim().isEmpty()) {
-            String categoryName = request.getCategoryName().trim();
-            Category category = categoryRepository.findByNameIgnoreCase(categoryName)
-                    .orElseGet(() -> categoryRepository.save(Category.builder().name(categoryName).build()));
-            existingBook.setCategory(category);
-        }
 
         Book updatedBook = bookRepository.save(existingBook);
 
