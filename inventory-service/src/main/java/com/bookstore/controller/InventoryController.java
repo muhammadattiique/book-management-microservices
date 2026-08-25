@@ -23,8 +23,6 @@ public class InventoryController {
             @PathVariable("bookId") Long bookId,
             @PathVariable("copyId") Long copyId) {
 
-        // FIX: Strict copyId check replaced.
-        // Ab system check karega ke is book ki KUI BHI copy available hai ya nahi.
         List<Inventory> copies = inventoryRepository.findByBookId(bookId);
         boolean isAvailable = copies.stream().anyMatch(Inventory::isAvailable);
 
@@ -41,11 +39,13 @@ public class InventoryController {
         return ResponseEntity.ok(summary);
     }
 
-    @PostMapping("/book/{bookId}/init")
-    public ResponseEntity<Void> initInventory(@PathVariable Long bookId, @RequestParam int totalCopies) {
+    // UPDATED: Now handles both INCREASING and DECREASING copies dynamically
+    @PostMapping("/init")
+    public ResponseEntity<Void> initInventory(@RequestParam Long bookId, @RequestParam Long totalCopies) {
         List<Inventory> existingCopies = inventoryRepository.findByBookId(bookId);
         int currentCopies = existingCopies.size();
 
+        // Condition 1: Agar admin copies barha de (e.g., 20 se 30)
         if (currentCopies < totalCopies) {
             long maxCopyId = existingCopies.stream().mapToLong(Inventory::getCopyId).max().orElse(0L);
             for (int i = 1; i <= (totalCopies - currentCopies); i++) {
@@ -56,6 +56,16 @@ public class InventoryController {
                 inventoryRepository.save(copy);
             }
         }
+        // Condition 2: Agar admin copies kam kar de (e.g., 20 se 10)
+        else if (currentCopies > totalCopies) {
+            long difference = currentCopies - totalCopies;
+            existingCopies.stream()
+                    .filter(Inventory::isAvailable) // Sirf available (un-borrowed) copies delete karega
+                    .sorted((c1, c2) -> Long.compare(c2.getCopyId(), c1.getCopyId())) // Highest ID se shuru karega
+                    .limit(difference)
+                    .forEach(inventoryRepository::delete);
+        }
+
         return ResponseEntity.ok().build();
     }
 
@@ -87,7 +97,6 @@ public class InventoryController {
         return ResponseEntity.badRequest().build();
     }
 
-    // Direct synchronous delete endpoint for inventory records when book is deleted
     @Transactional
     @DeleteMapping("/book/{bookId}")
     public ResponseEntity<Void> deleteInventoryByBookId(@PathVariable Long bookId) {

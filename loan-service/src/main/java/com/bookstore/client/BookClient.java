@@ -5,8 +5,8 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
-// Port 8085 is strictly set based on your Dockerfile EXPOSE 8085 logs
-@FeignClient(name = "book-service", url = "http://book-service:8085", configuration = FeignClientConfig.class)
+// CRITICAL FIX: Removed hardcoded "url = ..." so Eureka can automatically resolve the Render URL!
+@FeignClient(name = "book-service", configuration = FeignClientConfig.class)
 public interface BookClient {
 
     @GetMapping("/api/v1/books/{id}")

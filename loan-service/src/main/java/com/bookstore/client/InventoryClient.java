@@ -6,8 +6,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 
-// Yahan configuration add ki gayi hai
-@FeignClient(name = "inventory-service", url = "http://inventory-service:8083", configuration = FeignClientConfig.class)
+// FIX: Removed hardcoded URL. Now Eureka will automatically resolve the correct Render URL!
+@FeignClient(name = "inventory-service", configuration = FeignClientConfig.class)
 public interface InventoryClient {
 
     @GetMapping("/api/v1/inventory/books/{bookId}/copies/{copyId}/available")
