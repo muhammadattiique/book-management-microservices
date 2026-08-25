@@ -1,5 +1,6 @@
 package com.bookstore.service.impl;
 
+import com.bookstore.client.InventoryClient;
 import com.bookstore.dto.BookCreateRequest;
 import com.bookstore.dto.BookResponse;
 import com.bookstore.dto.BookUpdateRequest;
