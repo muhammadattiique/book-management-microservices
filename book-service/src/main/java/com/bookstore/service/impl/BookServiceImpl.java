@@ -96,7 +96,7 @@ public class BookServiceImpl implements BookService {
 
         if (request.getTotalCopies() != null && request.getTotalCopies() > 0) {
             try {
-                inventoryClient.initInventory(savedBook.getId(), request.getTotalCopies());
+                inventoryClient.initInventory(savedBook.getId(), request.getTotalCopies().longValue());
                 log.info("Successfully initialized {} inventory copies for Book ID: {}", request.getTotalCopies(), savedBook.getId());
             } catch (Exception e) {
                 log.error("Failed to initialize inventory for book ID: {}", savedBook.getId(), e);
@@ -149,7 +149,7 @@ public class BookServiceImpl implements BookService {
 
         if (request.getTotalCopies() != null && request.getTotalCopies() >= 0) {
             try {
-                inventoryClient.initInventory(updatedBook.getId(), request.getTotalCopies());
+                inventoryClient.initInventory(updatedBook.getId(), request.getTotalCopies().longValue());
                 log.info("Successfully updated inventory copies for Book ID: {}", updatedBook.getId());
             } catch (Exception e) {
                 log.error("Failed to update inventory for book ID: {}", updatedBook.getId(), e);
