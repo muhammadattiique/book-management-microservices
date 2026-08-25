@@ -36,7 +36,7 @@ public class BookServiceImpl implements BookService {
     private final AuthorRepository authorRepository;
     private final CategoryRepository categoryRepository;
     private final BookMapper bookMapper;
-    private final InventoryClient inventoryClient; // Feign client back for decoupled modules
+    private final InventoryClient inventoryClient;
 
     private BookResponse mapToBookResponseWithInventory(Book book) {
         BookResponse response = bookMapper.toBookResponse(book);
@@ -136,15 +136,19 @@ public class BookServiceImpl implements BookService {
         if (request.getPublisher() != null) existingBook.setPublisher(request.getPublisher());
         if (request.getPrice() != null) existingBook.setPrice(request.getPrice());
 
-        if (request.getAuthorId() != null) {
-            Author author = authorRepository.findById(request.getAuthorId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Author not found with ID: " + request.getAuthorId()));
+        // Updated to use authorName matching createBook logic
+        if (request.getAuthorName() != null && !request.getAuthorName().trim().isEmpty()) {
+            String authorName = request.getAuthorName().trim();
+            Author author = authorRepository.findByNameIgnoreCase(authorName)
+                    .orElseGet(() -> authorRepository.save(Author.builder().name(authorName).build()));
             existingBook.setAuthor(author);
         }
 
-        if (request.getCategoryId() != null) {
-            Category category = categoryRepository.findById(request.getCategoryId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Category not found with ID: " + request.getCategoryId()));
+        // Updated to use categoryName matching createBook logic
+        if (request.getCategoryName() != null && !request.getCategoryName().trim().isEmpty()) {
+            String categoryName = request.getCategoryName().trim();
+            Category category = categoryRepository.findByNameIgnoreCase(categoryName)
+                    .orElseGet(() -> categoryRepository.save(Category.builder().name(categoryName).build()));
             existingBook.setCategory(category);
         }
 
