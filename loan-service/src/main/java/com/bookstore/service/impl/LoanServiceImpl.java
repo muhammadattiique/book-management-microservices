@@ -17,9 +17,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -108,12 +110,11 @@ public class LoanServiceImpl implements LoanService {
     @Override
     @Transactional(readOnly = true)
     public List<LoanResponse> getAllLoans() {
-        log.info("Fetching all loans in the system");
+        log.info("Fetching all loans in the system (Batch Optimized)");
         List<Loan> loans = loanRepository.findAll();
-        
-        // Cache to store book titles and prevent duplicate HTTP calls to book-service
-        Map<Long, String> bookTitleCache = new HashMap<>();
-        
+
+        Map<Long, String> bookTitleCache = fetchBookTitlesInBatch(loans);
+
         return loans.stream()
                 .map(loan -> mapToResponse(loan, bookTitleCache))
                 .collect(Collectors.toList());
@@ -131,10 +132,11 @@ public class LoanServiceImpl implements LoanService {
     @Override
     @Transactional(readOnly = true)
     public List<LoanResponse> getLoansByMemberId(Long memberId) {
-        log.info("Fetching loans for member ID: {}", memberId);
+        log.info("Fetching loans for member ID: {} (Batch Optimized)", memberId);
         List<Loan> loans = loanRepository.findByMemberId(memberId);
-        Map<Long, String> bookTitleCache = new HashMap<>();
         
+        Map<Long, String> bookTitleCache = fetchBookTitlesInBatch(loans);
+
         return loans.stream()
                 .map(loan -> mapToResponse(loan, bookTitleCache))
                 .collect(Collectors.toList());
@@ -243,6 +245,28 @@ public class LoanServiceImpl implements LoanService {
             loan = loanRepository.save(loan);
         }
         return mapToResponse(loan, new HashMap<>());
+    }
+
+    // Helper method to fetch all required book titles in a single API call
+    private Map<Long, String> fetchBookTitlesInBatch(List<Loan> loans) {
+        Map<Long, String> bookTitleCache = new HashMap<>();
+        
+        Set<Long> uniqueBookIds = loans.stream()
+                .flatMap(loan -> loan.getItems().stream())
+                .map(LoanItem::getBookId)
+                .collect(Collectors.toSet());
+
+        if (!uniqueBookIds.isEmpty()) {
+            try {
+                var books = bookClient.getBooksBatch(new ArrayList<>(uniqueBookIds));
+                if (books != null) {
+                    books.forEach(b -> bookTitleCache.put(b.getId(), b.getTitle()));
+                }
+            } catch (Exception e) {
+                log.error("Failed to fetch books batch from book-service", e);
+            }
+        }
+        return bookTitleCache;
     }
 
     // Overloaded mapToResponse to accept a cache map
