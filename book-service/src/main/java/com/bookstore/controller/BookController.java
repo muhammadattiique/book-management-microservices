@@ -52,6 +52,13 @@ public class BookController {
         return ResponseEntity.ok(books);
     }
 
+    @Operation(summary = "Get books in batch", description = "Retrieves multiple books simultaneously by their IDs.")
+    @ApiResponse(responseCode = "200", description = "Successfully retrieved batch of books")
+    @GetMapping("/batch")
+    public ResponseEntity<List<BookResponse>> getBooksBatch(@RequestParam("ids") List<Long> ids) {
+        return ResponseEntity.ok(bookService.getBooksBatch(ids));
+    }
+
     @Operation(summary = "Get books by Author ID", description = "Custom query to retrieve books written by a specific author.")
     @ApiResponse(responseCode = "200", description = "Successfully retrieved books by author")
     @GetMapping("/author/{authorId}")
