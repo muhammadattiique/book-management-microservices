@@ -73,6 +73,7 @@ public class SecurityConfig {
                                 "/api/v1/auth/register",
                                 "/api/v1/auth/login"
                         ).permitAll()
+                        .requestMatchers("/actuator/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .authenticationProvider(authenticationProvider())
