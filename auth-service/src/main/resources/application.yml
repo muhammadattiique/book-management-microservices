@@ -31,3 +31,12 @@ logging:
 
 jwt:
   secret: ${JWT_SECRET:myverysecretkeythatneedstobesecureandlongenoughforjwtverification123456}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: always
