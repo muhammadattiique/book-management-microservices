@@ -1,5 +1,5 @@
 server:
-  port: ${SERVER_PORT:8083}
+  port: ${PORT:${SERVER_PORT:8083}}
 
 spring:
   application:
@@ -25,3 +25,12 @@ eureka:
 
 jwt:
   secret: ${JWT_SECRET:myverysecretkeythatneedstobesecureandlongenoughforjwtverification123456}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: always
