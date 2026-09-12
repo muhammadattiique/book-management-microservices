@@ -4,6 +4,9 @@ import com.bookstore.config.FeignClientConfig;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import java.util.List;
 
 // CRITICAL FIX: Removed hardcoded "url = ..." so Eureka can automatically resolve the Render URL!
 @FeignClient(name = "book-service", configuration = FeignClientConfig.class)
@@ -11,6 +14,10 @@ public interface BookClient {
 
     @GetMapping("/api/v1/books/{id}")
     BookDto getBookById(@PathVariable("id") Long id);
+
+    // --- NEW BATCH ENDPOINT ADDED HERE ---
+    @GetMapping("/api/v1/books/batch")
+    List<BookDto> getBooksBatch(@RequestParam("ids") List<Long> ids);
 
     // CRITICAL FIX: Made this 'public static' so JSON (Jackson) can read and map it properly!
     public static class BookDto {
