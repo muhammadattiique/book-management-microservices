@@ -23,4 +23,7 @@ public interface BookService {
     List<BookResponse> getBooksByAuthor(Long authorId);
     List<BookResponse> getBooksByCategoryName(String categoryName);
     List<BookResponse> getBooksCheaperThan(BigDecimal maxPrice);
+    
+    // Batch Fetching Method
+    List<BookResponse> getBooksBatch(List<Long> ids);
 }
