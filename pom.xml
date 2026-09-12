@@ -39,6 +39,13 @@
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
+
+			<!-- Centralized Actuator Management -->
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-starter-actuator</artifactId>
+				<version>3.3.3</version>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 
