@@ -200,4 +200,17 @@ public class BookServiceImpl implements BookService {
                 .map(this::mapToBookResponseWithInventory)
                 .collect(Collectors.toList());
     }
+
+    // --- NEW BATCH METHOD ADDED HERE ---
+    @Override
+    @Transactional(readOnly = true)
+    public List<BookResponse> getBooksBatch(List<Long> ids) {
+        log.info("Fetching batch of books for IDs: {}", ids);
+        // Notice we use bookMapper.toBookResponse(book) directly here.
+        // We DO NOT use mapToBookResponseWithInventory() because that would trigger
+        // another N+1 problem with the inventory-service during the batch call.
+        return bookRepository.findAllById(ids).stream()
+                .map(bookMapper::toBookResponse)
+                .collect(Collectors.toList());
+    }
 }
