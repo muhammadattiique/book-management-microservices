@@ -1,5 +1,5 @@
 server:
-  port: ${SERVER_PORT:8086}
+  port: ${PORT:${SERVER_PORT:8086}}
 
 spring:
   application:
@@ -29,3 +29,12 @@ logging:
 
 jwt:
   secret: ${JWT_SECRET:myverysecretkeythatneedstobesecureandlongenoughforjwtverification123456}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: always
