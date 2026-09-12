@@ -17,7 +17,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -28,7 +30,7 @@ public class LoanServiceImpl implements LoanService {
 
     private final LoanRepository loanRepository;
     private final InventoryClient inventoryClient;
-    private final BookClient bookClient; // <-- Yeh field zaroori thi jo missing thi
+    private final BookClient bookClient; 
 
     private static final double DAILY_FINE_RATE = 1.0;
 
@@ -40,7 +42,6 @@ public class LoanServiceImpl implements LoanService {
             throw new IllegalArgumentException("Loan must contain at least one item.");
         }
 
-        // Rule: At a time user can only have ONE active loan
         List<Loan> userLoans = loanRepository.findByMemberId(request.getMemberId());
         boolean hasActiveLoan = userLoans.stream().anyMatch(loan ->
                 loan.getStatus() == LoanStatus.ACTIVE ||
@@ -53,7 +54,6 @@ public class LoanServiceImpl implements LoanService {
             throw new IllegalStateException("Aap pehle hi aik active loan rakhte hain. Aik waqt mein sirf aik hi book loan li ja sakti hai.");
         }
 
-        // Check availability via InventoryClient
         for (var itemDto : request.getItems()) {
             if (itemDto.getCopyId() == null) {
                 itemDto.setCopyId(1L);
@@ -93,7 +93,6 @@ public class LoanServiceImpl implements LoanService {
         Loan savedLoan = loanRepository.save(loan);
         log.info("Successfully created loan with ID: {}", savedLoan.getId());
 
-        // Decrement inventory via InventoryClient (Minus)
         for (var item : savedLoan.getItems()) {
             try {
                 inventoryClient.borrowBook(item.getBookId());
@@ -103,15 +102,20 @@ public class LoanServiceImpl implements LoanService {
             }
         }
 
-        return mapToResponse(savedLoan);
+        return mapToResponse(savedLoan, new HashMap<>());
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<LoanResponse> getAllLoans() {
         log.info("Fetching all loans in the system");
-        return loanRepository.findAll().stream()
-                .map(this::mapToResponse)
+        List<Loan> loans = loanRepository.findAll();
+        
+        // Cache to store book titles and prevent duplicate HTTP calls to book-service
+        Map<Long, String> bookTitleCache = new HashMap<>();
+        
+        return loans.stream()
+                .map(loan -> mapToResponse(loan, bookTitleCache))
                 .collect(Collectors.toList());
     }
 
@@ -121,15 +125,18 @@ public class LoanServiceImpl implements LoanService {
         log.info("Fetching loan with ID: {}", id);
         Loan loan = loanRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Loan not found with ID: " + id));
-        return mapToResponse(loan);
+        return mapToResponse(loan, new HashMap<>());
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<LoanResponse> getLoansByMemberId(Long memberId) {
         log.info("Fetching loans for member ID: {}", memberId);
-        return loanRepository.findByMemberId(memberId).stream()
-                .map(this::mapToResponse)
+        List<Loan> loans = loanRepository.findByMemberId(memberId);
+        Map<Long, String> bookTitleCache = new HashMap<>();
+        
+        return loans.stream()
+                .map(loan -> mapToResponse(loan, bookTitleCache))
                 .collect(Collectors.toList());
     }
 
@@ -171,7 +178,6 @@ public class LoanServiceImpl implements LoanService {
         Loan updatedLoan = loanRepository.save(loan);
         log.info("Successfully returned loan ID: {}", id);
 
-        // Increment inventory via InventoryClient (Plus)
         for (var item : updatedLoan.getItems()) {
             try {
                 inventoryClient.returnBook(item.getBookId());
@@ -181,7 +187,7 @@ public class LoanServiceImpl implements LoanService {
             }
         }
 
-        return mapToResponse(updatedLoan);
+        return mapToResponse(updatedLoan, new HashMap<>());
     }
 
     @Override
@@ -202,7 +208,7 @@ public class LoanServiceImpl implements LoanService {
         Loan updatedLoan = loanRepository.save(loan);
         log.info("Loan ID {} marked as RENEWAL_PENDING, waiting for admin approval.", id);
 
-        return mapToResponse(updatedLoan);
+        return mapToResponse(updatedLoan, new HashMap<>());
     }
 
     @Override
@@ -223,7 +229,7 @@ public class LoanServiceImpl implements LoanService {
         Loan updatedLoan = loanRepository.save(loan);
         log.info("Renewal approved successfully for loan ID: {}. New due date: {}", id, newDueDate);
 
-        return mapToResponse(updatedLoan);
+        return mapToResponse(updatedLoan, new HashMap<>());
     }
 
     @Override
@@ -236,19 +242,27 @@ public class LoanServiceImpl implements LoanService {
             loan.setStatus(LoanStatus.ACTIVE);
             loan = loanRepository.save(loan);
         }
-        return mapToResponse(loan);
+        return mapToResponse(loan, new HashMap<>());
     }
 
-    private LoanResponse mapToResponse(Loan loan) {
+    // Overloaded mapToResponse to accept a cache map
+    private LoanResponse mapToResponse(Loan loan, Map<Long, String> bookTitleCache) {
         List<LoanResponse.LoanItemResponse> itemResponses = loan.getItems().stream().map(item -> {
             String bookTitle = "Unknown Book";
-            try {
-                var bookDto = bookClient.getBookById(item.getBookId());
-                if (bookDto != null && bookDto.getTitle() != null) {
-                    bookTitle = bookDto.getTitle();
+            
+            // Check cache first to avoid slow HTTP calls
+            if (bookTitleCache.containsKey(item.getBookId())) {
+                bookTitle = bookTitleCache.get(item.getBookId());
+            } else {
+                try {
+                    var bookDto = bookClient.getBookById(item.getBookId());
+                    if (bookDto != null && bookDto.getTitle() != null) {
+                        bookTitle = bookDto.getTitle();
+                        bookTitleCache.put(item.getBookId(), bookTitle); // Store in cache
+                    }
+                } catch (Exception e) {
+                    log.warn("Could not fetch book title for book ID: {}", item.getBookId());
                 }
-            } catch (Exception e) {
-                log.warn("Could not fetch book title for book ID: {}", item.getBookId());
             }
 
             return LoanResponse.LoanItemResponse.builder()
